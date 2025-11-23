@@ -1,0 +1,325 @@
+“Science, Technology & Biblical Faith” Website
+
+Role: You are a senior full-stack engineer + content designer.
+Goal: Build a fast, accessible, SEO-optimized website that explains how science, technology, and biblical faith are aligned. Include a homepage, topic hubs (cosmology/physics, biology, AI/technology, philosophy), FAQs, and a page that embeds my YouTube channel/video.
+
+Tech Stack (required)
+	•	Next.js 15 (App Router) + TypeScript
+	•	Tailwind CSS (utility-first; no CSS frameworks beyond Tailwind)
+	•	Content sourced from Markdown (.mdx) with frontmatter for easy editing
+	•	Static export possible (next build), but SSR allowed for the /blog index
+	•	No external DB. Store content in /content/**
+	•	Icons: Heroicons
+	•	Analytics: Drop-in placeholder for G-tag (env var NEXT_PUBLIC_GA_ID)
+	•	Dark mode: system-aware toggle
+
+Project Structure
+
+/app
+  /(site)/page.tsx                # Home
+  /(site)/cosmology/page.tsx
+  /(site)/biology/page.tsx
+  /(site)/ai-and-technology/page.tsx
+  /(site)/philosophy/page.tsx
+  /(site)/faq/page.tsx
+  /(site)/about/page.tsx
+  /(site)/youtube/page.tsx
+  /blog/page.tsx                  # Simple blog index (optional)
+  /components/*                   # UI components listed below
+  /api/newsletter/route.ts        # POST (stub)
+  /sitemap.ts
+  /robots.txt
+/content
+  /pages/*.mdx
+  /blog/*.mdx
+/public
+  /og-default.png
+  /logo.svg
+
+Design System
+	•	Look: calm, modern, scholarly.
+	•	Palette: Tailwind neutral with one accent (indigo).
+	•	Typography: Inter (UI), Georgia/Serif for long-form .prose.
+	•	A11y: WCAG 2.1 AA color contrast; focus states; skip-to-content link.
+
+Core Components (build these)
+	1.	<SiteHeader /> with nav, logo, theme toggle, CTA “Watch on YouTube”
+	2.	<SiteFooter /> with links, copyright, social (YouTube)
+	3.	<Hero /> (title, supporting copy, CTA buttons)
+	4.	<Card /> and <CardGrid /> (responsive)
+	5.	<Prose /> wrapper (Tailwind typography)
+	6.	<YouTubeEmbed videoId string /> (privacy-enhanced youtube-nocookie.com)
+	7.	<FeatureList items /> (icon + title + copy)
+	8.	<Quote /> (pull-quotes with citation)
+	9.	<NewsletterForm /> (front-end only; POST to /api/newsletter; no real storage)
+	10.	<Breadcrumbs />
+	11.	<SEO /> helper to set meta, Open Graph, JSON-LD Schema.org
+
+Pages & Content (seed text provided)
+
+Use the seed content below to generate initial .mdx files. Each topic page should have a summary, 3–5 key ideas, illustrative examples, a short, balanced “common objections & replies” section, and “further reading” list (no external crawling necessary—leave empty links as placeholders).
+
+1) Home (/)
+
+Title: Science, Technology & Biblical Faith—A Complementary Exploration
+Hero copy (use/edit):
+Science asks how the universe works. Faith asks why there is a universe at all. Far from being enemies, they meet in the same reality: an ordered, intelligible world that invites discovery and meaning.
+CTAs: “Explore Topics” (anchors to section), “Watch on YouTube” (/youtube)
+
+Sections:
+	•	Four Pillars (cards linking to pages): Cosmology & Physics, Biology, AI & Technology, Philosophy & Methods
+	•	Why This Matters: brief paragraph, include a <Quote />
+	•	Latest from the Channel: embed featured video (see YouTube config below)
+	•	Newsletter: <NewsletterForm />
+
+2) Cosmology & Physics (/cosmology)
+
+Key ideas (use/edit):
+	•	A universe with a beginning (Big Bang) resonates with “In the beginning…”
+	•	Fine-tuning of physical constants for life
+	•	Low initial entropy and cosmic order as preconditions for complex structure
+	•	Multiple explanations exist (design, multiverse, unknown mechanism); design remains a rational inference
+
+3) Biology (/biology)
+
+Key ideas:
+	•	DNA as information—code-like properties and functional specificity
+	•	Molecular machines and systems-level interdependence; biomimicry as engineering proof-of-excellence
+	•	Evolution as a mechanism vs. materialism as a philosophy—how many believers accept evolution without denying divine purpose
+	•	Human personhood and dignity grounded in imago Dei
+
+4) AI & Technology (/ai-and-technology)
+
+Key ideas:
+	•	Human creativity as a reflection (analogy) of a Creator (imago Dei)
+	•	AI demonstrates how intelligence produces complex systems; comparison to natural complexity
+	•	Limits of AI vs. human consciousness; questions about mind, meaning, and moral responsibility
+	•	Ethical tech stewardship: healing, justice, stewardship, humility
+
+5) Philosophy & Methods (/philosophy)
+
+Key ideas:
+	•	Science’s reliance on order, laws, and intelligibility
+	•	Faith and reason as allies; inference to the best explanation
+	•	Miracles as special acts of the law-giver, not denials of order
+	•	Interpreting Scripture with humility alongside strong scientific evidence
+
+6) FAQ (/faq)
+
+Seed 10 FAQs with clear, charitable answers (e.g., “Isn’t faith just believing without evidence?”, “What about Galileo?”, “Can I accept evolution and follow the Bible?”, “Doesn’t entropy rule out order?”, “Are miracles anti-science?”, “Is fine-tuning real or hype?”, etc.).
+
+7) YouTube (/youtube)
+	•	Goal: funnel to my channel and spotlight 1–3 featured videos.
+	•	Section 1: Channel hero with big “Subscribe” button.
+	•	Section 2: Grid of <YouTubeEmbed /> items (see config below).
+	•	Include a short note: “For deeper dives, I publish new videos regularly—subscribe!”
+
+8) About (/about)
+	•	Why the project exists, who it’s for (seekers, students, parents, pastors, engineers)
+	•	A statement of charitable dialogue: “We welcome honest questions.”
+
+YouTube Integration (config)
+
+Create /content/config/youtube.json with:
+
+{
+  "channelUrl": "https://www.youtube.com/@YOUR_CHANNEL_HANDLE",
+  "featured": [
+    { "title": "Science & Faith: The Big Picture", "videoId": "YOUR_VIDEO_ID_1" },
+    { "title": "Fine-Tuning in Plain English", "videoId": "YOUR_VIDEO_ID_2" },
+    { "title": "AI, Consciousness, and the Soul", "videoId": "YOUR_VIDEO_ID_3" }
+  ]
+}
+
+	•	Build a YouTube page that reads this JSON and renders embeds.
+	•	Use privacy-enhanced embeds: https://www.youtube-nocookie.com/embed/{videoId}.
+
+Seed Content (put in /content/pages/*.mdx)
+
+Use these as starting sections in each page (shortened for web). Write in inviting, non-combative language; include 1–2 balanced counterpoints.
+
+Cosmology.mdx (excerpt)
+
+---
+title: "Cosmology & Physics"
+description: "Big Bang beginnings, fine-tuning, and the order that makes science possible."
+---
+
+# Cosmology & Physics
+
+Modern cosmology points to a universe with a beginning and laws fine-tuned for life. These discoveries don’t “prove God,” but they are exactly the sort of features you’d expect if an intelligent Creator wanted a world discoverable by science.
+
+## Big Bang and a Beginning
+Evidence like cosmic expansion and the cosmic microwave background supports a finite beginning. That aligns comfortably with “In the beginning...”
+
+## Fine-Tuning
+Small changes to constants like gravity or the strong nuclear force would make stars or chemistry impossible. Explanations vary (design, multiverse, unknown mechanisms), yet design remains a reasonable inference.
+
+## Entropy and Order
+Low initial entropy allowed structure to emerge. Our ordered cosmos is the canvas on which science paints.
+
+Biology.mdx (excerpt)
+
+---
+title: "Biology"
+description: "From DNA’s information to biomimicry—complexity that inspires wonder."
+---
+
+# Biology
+
+DNA stores digital-like information in a four-letter code. Cells use molecular machines and complex networks that often outclass human engineering. Many believers accept evolutionary mechanisms while rejecting the claim that nature is purposeless. Evolution can be seen as a tool within divine providence.
+
+AI-and-Technology.mdx (excerpt)
+
+---
+title: "AI & Technology"
+description: "What our creative tools reveal about intelligence, meaning, and limits."
+---
+
+# AI & Technology
+
+AI systems come from intelligent agents, careful design, and training. That analogy helps some people see natural complexity as more consistent with Mind than with blind chance. At the same time, AI highlights the mystery of consciousness and the ethical responsibility to use technology for good.
+
+Philosophy.mdx (excerpt)
+
+---
+title: "Philosophy & Methods"
+description: "Faith and reason as partners; how to think well about science and Scripture."
+---
+
+# Philosophy & Methods
+
+Science assumes order and intelligibility; faith offers a ground for why such order exists. Miracles are special actions by the law-giver, not denials of the laws. When strong scientific evidence and Scripture seem to conflict, thoughtful interpretation on both sides helps truth meet truth.
+
+FAQ.mdx (seed 10 Q&As)
+
+---
+title: "Frequently Asked Questions"
+description: "Honest questions, clear answers."
+---
+
+# FAQ
+
+## Isn’t faith believing without evidence?
+In the Bible, faith is trust based on testimony, experience, and reasons. It’s not a refusal to think; it’s a commitment to seek truth.
+
+## What about Galileo?
+The conflict was complex, involving politics and interpretation. The broader history shows many devout scientists and strong church support for learning.
+
+Global SEO
+
+Implement in app/layout.tsx:
+	•	Title templates per page
+	•	Open Graph (title, description, image)
+	•	Twitter Card large image
+	•	JSON-LD for WebSite, BreadcrumbList
+	•	sitemap.ts + robots.txt
+	•	Canonicals via metadata in Next
+
+Footer Links
+	•	Home, Cosmology, Biology, AI & Technology, Philosophy, FAQ, About, YouTube
+	•	Terms/Privacy (stub pages)
+
+Performance & A11y
+	•	Core Web Vitals ≥ “good”
+	•	Lighthouse: Performance ≥ 90, A11y ≥ 95, SEO ≥ 90
+	•	Use <Image /> for assets, lazy-load embeds, defer analytics
+
+Environment Variables
+	•	NEXT_PUBLIC_GA_ID (optional)
+
+Instructions to Me (the Agent)
+	1.	Scaffold the project with the structure above.
+	2.	Implement all components and pages.
+	3.	Generate seed .mdx content using the provided excerpts (expand lightly to be web-friendly).
+	4.	Build the YouTube page from youtube.json.
+	5.	Add a simple /blog index that lists any .mdx in /content/blog.
+	6.	Provide clear README.md: install, dev, build, export, where to edit content, where to set YouTube IDs, how to add blog posts, how to deploy on Replit + static hosting.
+
+Acceptance Tests (must pass)
+	•	Homepage loads with hero, four pillar cards, newsletter form, and a featured YouTube embed.
+	•	Each pillar page exists with summary + 3–5 key sections + objections/replies + further reading placeholders.
+	•	/youtube renders channel link and 1–3 embeds from youtube.json.
+	•	Dark mode toggle works and persists (prefers-color-scheme).
+	•	sitemap.xml and robots.txt are served.
+	•	Lighthouse (desktop) ≥ 90/95/90 (Perf/A11y/SEO).
+	•	Build runs with npm run build and npm start in Replit.
+	•	All content is editable via .mdx; no DB required.
+
+1) YouTube config (replace the old example)
+
+// /content/config/youtube.json
+{
+  "channelUrl": "https://www.youtube.com/watch?v=_CcjoOpHU6U",
+  "featured": [
+    {
+      "title": "Can Science and Faith Work Together?",
+      "videoId": "_CcjoOpHU6U"
+    }
+  ]
+}
+
+Then, in the /youtube page instructions, your CTAs should say:
+	•	Primary button: “Watch on YouTube” → channelUrl from this JSON
+	•	Feature the first video in featured as the hero embed.
+
+⸻
+
+2) Home page hero CTA (tie to this video)
+
+In the Home page section of the prompt, tweak the “Latest from the Channel” part to:
+
+### Latest from the Channel
+
+Embed the featured video from `youtube.json` (videoId: `_CcjoOpHU6U`) using `<YouTubeEmbed />`, with a secondary button “Watch on YouTube” linking to `channelUrl`.
+
+
+⸻
+
+3) SEO + domain setup for nexusfaith.com
+
+In the Global SEO part of the prompt, add:
+
+// In app/layout.tsx or SEO helper
+
+const siteConfig = {
+  name: "NexusFaith",
+  domain: "https://nexusfaith.com",
+  description: "NexusFaith explores how science, technology, and biblical faith align.",
+};
+
+export const metadata: Metadata = {
+  metadataBase: new URL(siteConfig.domain),
+  title: {
+    default: siteConfig.name,
+    template: `%s | ${siteConfig.name}`,
+  },
+  description: siteConfig.description,
+  openGraph: {
+    title: siteConfig.name,
+    description: siteConfig.description,
+    url: siteConfig.domain,
+    siteName: siteConfig.name,
+    images: ["/og-default.png"],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteConfig.name,
+    description: siteConfig.description,
+    images: ["/og-default.png"],
+  },
+};
+
+And mention explicitly in the prompt:
+
+Canonical domain: use https://nexusfaith.com for all canonical URLs and Open Graph URLs.
+
+⸻
+
+4) Header “Watch on YouTube” button
+
+In the <SiteHeader /> instructions, specify:
+
+- Include a primary header button “Watch on YouTube” that links to:
+  - `/youtube` (internal route), and on that page expose the external `channelUrl` from `youtube.json`
