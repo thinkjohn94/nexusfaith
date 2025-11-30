@@ -44,12 +44,38 @@ export default function Home() {
     <div className="min-h-screen bg-background font-sans">
       <SEO 
         title="Home" 
-        description="NexusFaith explores the harmony between science, technology, and biblical faith." 
+        description="NexusFaith bridges the gap between modern science and timeless faith – providing insights, answers, and inspiring stories that show how scientific discovery and biblical truth complement each other." 
       />
       <SiteHeader />
       
       <main>
         <Hero />
+
+        {/* Mission Statement Section */}
+        <section className="py-20 bg-gradient-to-b from-primary/5 to-transparent border-b border-primary/10">
+          <div className="container px-4 md:px-8">
+            <div className="mx-auto max-w-2xl text-center">
+              <h2 className="text-2xl font-serif font-bold mb-6 text-foreground">Our Mission</h2>
+              <p className="text-lg leading-relaxed text-foreground/90 mb-8">
+                NexusFaith <span className="font-semibold text-primary">bridges the gap between modern science and timeless faith</span> — providing insights, answers, and inspiring stories that show how scientific discovery and biblical truth complement each other.
+              </p>
+              <div className="flex flex-wrap justify-center gap-6 text-sm font-medium">
+                <div className="flex items-center gap-2">
+                  <div className="h-2 w-2 rounded-full bg-primary" />
+                  <span>Evidence-Based</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="h-2 w-2 rounded-full bg-primary" />
+                  <span>Intellectually Honest</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="h-2 w-2 rounded-full bg-primary" />
+                  <span>Welcoming Questions</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* Four Pillars Section */}
         <section id="topics" className="py-24 bg-secondary/30">
