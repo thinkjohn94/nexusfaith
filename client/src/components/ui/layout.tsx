@@ -29,6 +29,7 @@ export function SiteHeader() {
     { name: "Biology", href: "/biology" },
     { name: "AI & Tech", href: "/ai-and-technology" },
     { name: "Philosophy", href: "/philosophy" },
+    { name: "Faith Answers", href: "/faith-answers" },
     { name: "About", href: "/about" },
   ];
 
@@ -151,6 +152,7 @@ export function SiteFooter() {
           <div>
             <h3 className="font-semibold mb-4">Resources</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
+              <li><Link href="/faith-answers"><a className="hover:text-primary">Faith Answers</a></Link></li>
               <li><Link href="/about"><a className="hover:text-primary">About</a></Link></li>
               <li><Link href="/faq"><a className="hover:text-primary">FAQ</a></Link></li>
               <li><Link href="/youtube"><a className="hover:text-primary">YouTube Channel</a></Link></li>
