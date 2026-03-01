@@ -13,7 +13,7 @@ import {
   Scroll, 
   Atom, 
   Brain, 
-  Hands,
+  HandHeart,
   Copy,
   Share2,
   BookOpen,
@@ -130,7 +130,7 @@ const topics = [
   { key: 'jesus' as TopicKey, name: 'Historical Jesus', icon: Scroll, color: 'bg-amber-600' },
   { key: 'finetuning' as TopicKey, name: 'Fine-Tuning', icon: Atom, color: 'bg-purple-500' },
   { key: 'ai' as TopicKey, name: 'AI & Consciousness', icon: Brain, color: 'bg-green-500' },
-  { key: 'prayer' as TopicKey, name: 'Prayer & Doubt', icon: Hands, color: 'bg-indigo-500' }
+  { key: 'prayer' as TopicKey, name: 'Prayer & Doubt', icon: HandHeart, color: 'bg-indigo-500' }
 ];
 
 const difficultyLevels = [
