@@ -13,7 +13,7 @@ citations:
     source: 'Princeton University Press'
     year: 2022
   - author: 'Stephen Meyer'
-    title: 'Darwin\'s Doubt'
+    title: "Darwin's Doubt"
     source: 'HarperOne'
     year: 2013
 lastUpdated: 2026-03-01

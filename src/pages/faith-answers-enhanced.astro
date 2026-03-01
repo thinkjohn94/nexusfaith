@@ -1,0 +1,394 @@
+---
+import { getCollection } from 'astro:content';
+import SearchEngine from '../components/SearchEngine.tsx';
+
+const questions = await getCollection('questions');
+
+// Prepare questions data for the search component
+const questionsData = questions.map(question => ({
+  id: question.id,
+  slug: question.slug,
+  data: {
+    title: question.data.title || question.slug.replace(/-/g, ' '),
+    category: question.data.category,
+    difficulty: question.data.difficulty,
+    tags: question.data.tags || []
+  },
+  body: question.body || ''
+}));
+---
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Faith Answers - NexusFaith | Evidence-Based Apologetics</title>
+    <meta name="description" content="Get evidence-based answers to tough questions about faith, science, and Christianity. Search our comprehensive database of apologetics responses with scholarly citations.">
+    
+    <!-- Preconnect to important domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+    
+    <!-- Critical CSS inlined for performance -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #2d3748;
+        }
+        
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 6px;
+            background: #667eea;
+            color: white;
+            padding: 8px;
+            text-decoration: none;
+            border-radius: 4px;
+            z-index: 1000;
+            transition: top 0.3s;
+        }
+        
+        .skip-link:focus {
+            top: 6px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #4a5568;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        
+        .nav-links a {
+            color: #4a5568;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+        }
+        
+        .nav-links a:hover,
+        .nav-links a:focus {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+        
+        .nav-links a[aria-current="page"] {
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .main-content {
+            background: white;
+            border-radius: 20px;
+            margin: 2rem 0;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .hero-section {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        h1 {
+            color: #2d3748;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            color: #718096;
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0 3rem 0;
+        }
+        
+        .feature-card {
+            background: #f7fafc;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid #e2e8f0;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-2px);
+            border-color: #667eea;
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #2d3748;
+        }
+        
+        .feature-description {
+            color: #718096;
+            font-size: 0.95rem;
+        }
+        
+        .search-section {
+            margin: 3rem 0;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #2d3748;
+        }
+        
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .main-content {
+                margin: 1rem 0;
+                padding: 1.5rem;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            .nav-links a:hover,
+            .nav-links a:focus {
+                background: #667eea;
+                color: white;
+            }
+        }
+        
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            .feature-card,
+            .nav-links a {
+                transition: none;
+            }
+            
+            .feature-card:hover {
+                transform: none;
+            }
+        }
+        
+        /* Print styles */
+        @media print {
+            header {
+                position: static;
+                box-shadow: none;
+            }
+            
+            .main-content {
+                box-shadow: none;
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <header role="banner">
+        <div class="header-content container">
+            <a href="/" class="logo">
+                <span role="img" aria-label="Cross">✝️</span>
+                NexusFaith
+            </a>
+            <nav role="navigation" aria-label="Main navigation">
+                <ul class="nav-links">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/faith-answers" aria-current="page">Faith Answers</a></li>
+                    <li><a href="/articles">Articles</a></li>
+                    <li><a href="/scholars">Scholars</a></li>
+                    <li><a href="/about">About</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    
+    <div class="container">
+        <main id="main-content" class="main-content" role="main">
+            <section class="hero-section">
+                <h1>Answer Engine: Evidence-Based Faith Responses</h1>
+                <p class="subtitle">
+                    No more "just have faith" answers. Get scholarly, evidence-based responses to tough questions about faith, science, and Christianity.
+                </p>
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon" role="img" aria-label="Search">🔍</div>
+                        <h3 class="feature-title">Smart Search</h3>
+                        <p class="feature-description">Find answers by topic, difficulty level, or keywords with our intelligent search system</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon" role="img" aria-label="Graduate cap">🎓</div>
+                        <h3 class="feature-title">Scholarly Citations</h3>
+                        <p class="feature-description">Every answer backed by academic sources and respected Christian scholars</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon" role="img" aria-label="Lightbulb">💡</div>
+                        <h3 class="feature-title">Multiple Levels</h3>
+                        <p class="feature-description">From elementary to graduate-level explanations for every background</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon" role="img" aria-label="Chat bubble">💬</div>
+                        <h3 class="feature-title">Practice Mode</h3>
+                        <p class="feature-description">Train your apologetics skills with our conversation simulator</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="search-section">
+                <h2 class="section-title">Search Our Question Database</h2>
+                <SearchEngine questions={questionsData} client:load />
+            </section>
+        </main>
+    </div>
+    
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch(registrationError => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+    </script>
+    
+    <!-- Performance monitoring -->
+    <script>
+        // Web Vitals tracking
+        function vitalsReporter(metric) {
+            // In production, this would send to analytics
+            console.log('Web Vital:', metric);
+        }
+
+        // Track Core Web Vitals using basic timing API
+        function trackWebVitals() {
+            if ('PerformanceObserver' in window) {
+                // Track Largest Contentful Paint (LCP)
+                const lcpObserver = new PerformanceObserver((list) => {
+                    for (const entry of list.getEntries()) {
+                        vitalsReporter({
+                            name: 'LCP',
+                            value: entry.startTime,
+                            rating: entry.startTime <= 2500 ? 'good' : entry.startTime <= 4000 ? 'needs-improvement' : 'poor'
+                        });
+                    }
+                });
+                lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
+
+                // Track First Input Delay (FID)
+                const fidObserver = new PerformanceObserver((list) => {
+                    for (const entry of list.getEntries()) {
+                        vitalsReporter({
+                            name: 'FID',
+                            value: entry.processingStart - entry.startTime,
+                            rating: entry.processingStart - entry.startTime <= 100 ? 'good' : entry.processingStart - entry.startTime <= 300 ? 'needs-improvement' : 'poor'
+                        });
+                    }
+                });
+                fidObserver.observe({ entryTypes: ['first-input'] });
+
+                // Track Cumulative Layout Shift (CLS)
+                let clsValue = 0;
+                const clsObserver = new PerformanceObserver((list) => {
+                    for (const entry of list.getEntries()) {
+                        if (!entry.hadRecentInput) {
+                            clsValue += entry.value;
+                        }
+                    }
+                    vitalsReporter({
+                        name: 'CLS',
+                        value: clsValue,
+                        rating: clsValue <= 0.1 ? 'good' : clsValue <= 0.25 ? 'needs-improvement' : 'poor'
+                    });
+                });
+                clsObserver.observe({ entryTypes: ['layout-shift'] });
+            }
+        }
+
+        // Initialize tracking
+        trackWebVitals();
+    </script>
+</body>
+</html>

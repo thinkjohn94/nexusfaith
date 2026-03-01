@@ -2,14 +2,25 @@
 title: "Tiny Brains, Massive Intelligence: How Honeybee Research Points to a Creator"
 description: "A groundbreaking 2026 study reveals honeybees make sophisticated decisions that rival primates—despite having brains 100 times smaller. This stunning efficiency points to intelligent design, not random evolution."
 author: "NexusFaith Team"
-date: 2026-03-01
-category: "Science & Faith"
+publishDate: 2026-03-01
+category: "evolution"
 tags: ["intelligent design", "honeybees", "consciousness", "evolution", "neuroscience"]
-image: "/images/honeybee-flower.jpg"
 featured: true
 difficulty: "teen"
-readTime: "6 minutes"
 scholars: ["Lars Chittka", "Stephen Meyer", "Michael Behe"]
+citations:
+  - author: "Lars Chittka"
+    title: "Honeybee Decision-Making and Cognitive Sophistication"
+    source: "University of Sheffield"
+    year: 2026
+  - author: "Stephen Meyer"
+    title: "Darwin's Doubt"
+    source: "HarperOne"
+    year: 2013
+  - author: "Michael Behe"
+    title: "Darwin's Black Box"
+    source: "Free Press"
+    year: 1996
 ---
 
 # Tiny Brains, Massive Intelligence: How Honeybee Research Points to a Creator

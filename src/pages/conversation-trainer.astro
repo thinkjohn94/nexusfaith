@@ -1,0 +1,461 @@
+---
+import ConversationTrainer from '../components/ConversationTrainer.tsx';
+
+// Sample training scenarios
+const scenarios = [
+  {
+    title: "Evolution Discussion with Teen",
+    description: "Practice explaining how evolution and creation can work together to a scientifically-curious teenager.",
+    difficulty: 'beginner' as const,
+    opponent: {
+      name: "Alex",
+      personality: "Curious but skeptical, likes science",
+      background: "High school student who loves biology class"
+    }
+  },
+  {
+    title: "College Debate: Fine-Tuning",
+    description: "Defend the fine-tuning argument against a physics major who thinks it's just confirmation bias.",
+    difficulty: 'intermediate' as const,
+    opponent: {
+      name: "Jordan",
+      personality: "Analytical, evidence-focused, respectful but challenging",
+      background: "College physics major with strong scientific background"
+    }
+  },
+  {
+    title: "Graduate Seminar: Consciousness & AI",
+    description: "Engage with a philosophy PhD candidate about whether AI consciousness threatens human uniqueness.",
+    difficulty: 'advanced' as const,
+    opponent: {
+      name: "Dr. Morgan",
+      personality: "Intellectually rigorous, philosophically sophisticated",
+      background: "Philosophy PhD candidate specializing in philosophy of mind"
+    }
+  }
+];
+---
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Conversation Trainer - NexusFaith | Practice Apologetics</title>
+    <meta name="description" content="Practice your apologetics skills with AI conversation partners. Train for real-world discussions about faith, science, and Christianity.">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #2d3748;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #4a5568;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        
+        .nav-links a {
+            color: #4a5568;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+        }
+        
+        .nav-links a:hover,
+        .nav-links a:focus {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+        
+        .main-content {
+            background: white;
+            border-radius: 20px;
+            margin: 2rem 0;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .hero-section {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        h1 {
+            color: #2d3748;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            color: #718096;
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .scenarios-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .scenario-card {
+            background: #f7fafc;
+            border-radius: 15px;
+            padding: 1.5rem;
+            border-left: 4px solid #667eea;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+        
+        .scenario-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+        
+        .scenario-title {
+            color: #2d3748;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .scenario-description {
+            color: #4a5568;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+        
+        .scenario-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .difficulty-badge {
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: capitalize;
+            color: white;
+        }
+        
+        .difficulty-beginner { background: #10b981; }
+        .difficulty-intermediate { background: #f59e0b; }
+        .difficulty-advanced { background: #ef4444; }
+        
+        .opponent-info {
+            background: #edf2f7;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .opponent-name {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 0.25rem;
+        }
+        
+        .opponent-details {
+            font-size: 0.9rem;
+            color: #718096;
+        }
+        
+        .start-training-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s;
+            width: 100%;
+        }
+        
+        .start-training-btn:hover {
+            transform: translateY(-1px);
+        }
+        
+        .trainer-container {
+            margin-top: 3rem;
+            display: none;
+        }
+        
+        .trainer-container.active {
+            display: block;
+        }
+        
+        .back-button {
+            background: #e2e8f0;
+            color: #4a5568;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 2rem;
+        }
+        
+        .tips-section {
+            background: linear-gradient(135deg, #e6f3ff 0%, #f0f8ff 100%);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 2px solid #bfdbfe;
+        }
+        
+        .tips-title {
+            color: #1e40af;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .tip-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            border-left: 3px solid #3b82f6;
+        }
+        
+        .tip-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .tip-text {
+            color: #374151;
+            font-size: 0.95rem;
+        }
+        
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .main-content {
+                margin: 1rem 0;
+                padding: 1.5rem;
+            }
+            
+            .scenarios-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .tips-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="header-content container">
+            <a href="/" class="logo">
+                <span role="img" aria-label="Cross">✝️</span>
+                NexusFaith
+            </a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/faith-answers">Faith Answers</a></li>
+                    <li><a href="/articles">Articles</a></li>
+                    <li><a href="/conversation-trainer" style="color: #667eea; font-weight: 600;">Practice</a></li>
+                    <li><a href="/about">About</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    
+    <div class="container">
+        <main class="main-content">
+            <div id="scenarios-view">
+                <section class="hero-section">
+                    <h1>🗣️ Conversation Trainer</h1>
+                    <p class="subtitle">
+                        Practice your apologetics skills with AI conversation partners. Build confidence for real-world discussions about faith and science.
+                    </p>
+                </section>
+
+                <section class="tips-section">
+                    <h3 class="tips-title">💡 Training Tips for Success</h3>
+                    <div class="tips-grid">
+                        <div class="tip-card">
+                            <div class="tip-icon">👂</div>
+                            <div class="tip-text"><strong>Listen First:</strong> Understand their perspective before presenting your view</div>
+                        </div>
+                        <div class="tip-card">
+                            <div class="tip-icon">🤝</div>
+                            <div class="tip-text"><strong>Find Common Ground:</strong> Start with areas of agreement</div>
+                        </div>
+                        <div class="tip-card">
+                            <div class="tip-icon">📚</div>
+                            <div class="tip-text"><strong>Use Evidence:</strong> Back up claims with scholarly sources and data</div>
+                        </div>
+                        <div class="tip-card">
+                            <div class="tip-icon">❓</div>
+                            <div class="tip-text"><strong>Ask Questions:</strong> Help them discover truth through Socratic method</div>
+                        </div>
+                        <div class="tip-card">
+                            <div class="tip-icon">💙</div>
+                            <div class="tip-text"><strong>Show Humility:</strong> Admit when you don't know something</div>
+                        </div>
+                        <div class="tip-card">
+                            <div class="tip-icon">🎯</div>
+                            <div class="tip-text"><strong>Stay Focused:</strong> Address one topic at a time</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="scenarios-section">
+                    <h2 style="text-align: center; margin-bottom: 2rem; color: #2d3748;">Choose Your Training Scenario</h2>
+                    <div class="scenarios-grid">
+                        {scenarios.map((scenario, index) => (
+                            <div class="scenario-card" data-scenario-id={index}>
+                                <h3 class="scenario-title">{scenario.title}</h3>
+                                <p class="scenario-description">{scenario.description}</p>
+                                
+                                <div class="scenario-meta">
+                                    <span class={`difficulty-badge difficulty-${scenario.difficulty}`}>
+                                        {scenario.difficulty}
+                                    </span>
+                                </div>
+                                
+                                <div class="opponent-info">
+                                    <div class="opponent-name">Conversation Partner: {scenario.opponent.name}</div>
+                                    <div class="opponent-details">{scenario.opponent.background}</div>
+                                    <div class="opponent-details"><em>{scenario.opponent.personality}</em></div>
+                                </div>
+                                
+                                <button class="start-training-btn" onclick={`startTraining(${index})`}>
+                                    Start Training Session →
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            </div>
+
+            <div id="trainer-view" class="trainer-container">
+                <button class="back-button" onclick="showScenarios()">← Back to Scenarios</button>
+                <div id="trainer-component"></div>
+            </div>
+        </main>
+    </div>
+
+    <script define:vars={{ scenarios }}>
+        let currentScenario = null;
+
+        function startTraining(scenarioIndex) {
+            currentScenario = scenarios[scenarioIndex];
+            document.getElementById('scenarios-view').style.display = 'none';
+            document.getElementById('trainer-view').classList.add('active');
+            
+            // Create and render the trainer component
+            renderTrainer();
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        function showScenarios() {
+            document.getElementById('trainer-view').classList.remove('active');
+            document.getElementById('scenarios-view').style.display = 'block';
+            
+            // Clear trainer component
+            document.getElementById('trainer-component').innerHTML = '';
+            currentScenario = null;
+        }
+
+        function renderTrainer() {
+            const container = document.getElementById('trainer-component');
+            
+            if (!currentScenario) return;
+            
+            // For demo purposes, show a simplified version
+            // In production, this would render the actual ConversationTrainer component
+            container.innerHTML = `
+                <div style="text-align: center; padding: 3rem; background: #f7fafc; border-radius: 15px; border: 2px dashed #cbd5e0;">
+                    <h3 style="color: #2d3748; margin-bottom: 1rem;">${currentScenario.title}</h3>
+                    <p style="color: #718096; margin-bottom: 2rem;">${currentScenario.description}</p>
+                    <p style="color: #4a5568; font-style: italic;">
+                        🚀 Conversation Trainer Component would load here<br>
+                        <small>This is a demonstration of the trainer interface. The full interactive conversation would appear in this space.</small>
+                    </p>
+                    <div style="margin-top: 2rem; padding: 1rem; background: #e6f3ff; border-radius: 8px; border-left: 4px solid #3b82f6;">
+                        <strong>Training Partner:</strong> ${currentScenario.opponent.name}<br>
+                        <strong>Background:</strong> ${currentScenario.opponent.background}<br>
+                        <strong>Personality:</strong> ${currentScenario.opponent.personality}
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
