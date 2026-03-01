@@ -140,6 +140,7 @@ const difficultyLevels = [
 ];
 
 export default function FaithAnswers() {
+  // Force deployment trigger - Feb 28, 2026
   const [selectedDifficulty, setSelectedDifficulty] = useState<DifficultyLevel>('teen');
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState<Answer | null>(null);
