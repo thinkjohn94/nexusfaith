@@ -1,5 +1,9 @@
 ---
+import { getCollection } from 'astro:content';
 
+// Get featured content
+const questions = await getCollection('questions');
+const featuredQuestions = questions.slice(0, 6); // Show first 6 for demo
 ---
 
 <html lang="en">
@@ -7,11 +11,297 @@
 		<meta charset="utf-8" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
+		<title>NexusFaith - Discover the Divine Code | Where Science Illuminates Scripture</title>
+		<meta name="description" content="Educated faith for science-minded believers. Get evidence-based answers to tough questions about faith, science, and Christianity.">
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+			
+			body {
+				font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+				line-height: 1.6;
+				color: #333;
+				background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+				min-height: 100vh;
+			}
+			
+			.container {
+				max-width: 1200px;
+				margin: 0 auto;
+				padding: 0 20px;
+			}
+			
+			header {
+				background: rgba(255, 255, 255, 0.95);
+				backdrop-filter: blur(10px);
+				box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+				position: sticky;
+				top: 0;
+				z-index: 100;
+			}
+			
+			nav {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				padding: 1rem 0;
+			}
+			
+			.logo {
+				font-size: 1.5rem;
+				font-weight: 700;
+				color: #4a5568;
+				text-decoration: none;
+			}
+			
+			.nav-links {
+				display: flex;
+				list-style: none;
+				gap: 2rem;
+			}
+			
+			.nav-links a {
+				color: #4a5568;
+				text-decoration: none;
+				font-weight: 500;
+				transition: color 0.3s;
+			}
+			
+			.nav-links a:hover {
+				color: #667eea;
+			}
+			
+			.hero {
+				text-align: center;
+				padding: 4rem 0;
+				color: white;
+			}
+			
+			.hero h1 {
+				font-size: 3rem;
+				font-weight: 700;
+				margin-bottom: 1rem;
+				text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+			}
+			
+			.hero p {
+				font-size: 1.2rem;
+				margin-bottom: 2rem;
+				opacity: 0.9;
+			}
+			
+			.cta-button {
+				display: inline-block;
+				background: #f7fafc;
+				color: #667eea;
+				padding: 1rem 2rem;
+				border-radius: 50px;
+				text-decoration: none;
+				font-weight: 600;
+				transition: transform 0.3s, box-shadow 0.3s;
+				box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+			}
+			
+			.cta-button:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+			}
+			
+			.pillars {
+				background: white;
+				padding: 4rem 0;
+			}
+			
+			.pillars-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+				gap: 2rem;
+			}
+			
+			.pillar-card {
+				text-align: center;
+				padding: 2rem;
+				border-radius: 15px;
+				background: #f7fafc;
+				transition: transform 0.3s;
+			}
+			
+			.pillar-card:hover {
+				transform: translateY(-5px);
+			}
+			
+			.pillar-icon {
+				font-size: 3rem;
+				margin-bottom: 1rem;
+			}
+			
+			.answer-engine {
+				background: #f7fafc;
+				padding: 4rem 0;
+			}
+			
+			.answer-preview {
+				background: white;
+				border-radius: 15px;
+				padding: 2rem;
+				box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+			}
+			
+			.questions-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+				gap: 1.5rem;
+				margin-top: 2rem;
+			}
+			
+			.question-card {
+				background: white;
+				padding: 1.5rem;
+				border-radius: 10px;
+				border-left: 4px solid #667eea;
+				transition: transform 0.3s;
+			}
+			
+			.question-card:hover {
+				transform: translateY(-3px);
+			}
+			
+			.question-title {
+				color: #2d3748;
+				margin-bottom: 0.5rem;
+				font-weight: 600;
+			}
+			
+			.question-meta {
+				display: flex;
+				justify-content: space-between;
+				font-size: 0.9rem;
+				color: #718096;
+			}
+			
+			.difficulty-badge {
+				padding: 0.2rem 0.5rem;
+				border-radius: 15px;
+				font-size: 0.8rem;
+				font-weight: 500;
+			}
+			
+			.difficulty-teen {
+				background: #fef5e7;
+				color: #d69e2e;
+			}
+			
+			footer {
+				background: #2d3748;
+				color: white;
+				padding: 2rem 0;
+				text-align: center;
+			}
+			
+			@media (max-width: 768px) {
+				.hero h1 {
+					font-size: 2rem;
+				}
+				
+				.nav-links {
+					display: none;
+				}
+				
+				.pillars-grid {
+					grid-template-columns: 1fr;
+				}
+			}
+		</style>
 	</head>
 	<body>
-		<h1>Astro</h1>
+		<header>
+			<nav class="container">
+				<a href="/" class="logo">✝️ NexusFaith</a>
+				<ul class="nav-links">
+					<li><a href="/">Home</a></li>
+					<li><a href="/faith-answers">Faith Answers</a></li>
+					<li><a href="/articles">Articles</a></li>
+					<li><a href="/scholars">Scholars</a></li>
+					<li><a href="/about">About</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main>
+			<section class="hero">
+				<div class="container">
+					<h1>Discover the Divine Code</h1>
+					<p>Where Science Illuminates Scripture</p>
+					<a href="/faith-answers" class="cta-button">Get Answers Now →</a>
+				</div>
+			</section>
+
+			<section class="pillars">
+				<div class="container">
+					<h2 style="text-align: center; margin-bottom: 3rem; font-size: 2rem; color: #2d3748;">
+						Three Pillars of Faith + Science
+					</h2>
+					<div class="pillars-grid">
+						<div class="pillar-card">
+							<div class="pillar-icon">🤖</div>
+							<h3>AI & Scripture</h3>
+							<p>Exploring consciousness, intelligence, and what makes humans uniquely created in God's image</p>
+						</div>
+						<div class="pillar-card">
+							<div class="pillar-icon">⚡</div>
+							<h3>Physics of Creation</h3>
+							<p>Fine-tuning, cosmological constants, and the mathematical precision pointing to a Creator</p>
+						</div>
+						<div class="pillar-card">
+							<div class="pillar-icon">🔬</div>
+							<h3>Energy & Faith</h3>
+							<p>Thermodynamics, information theory, and the improbability of life arising by chance</p>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<section class="answer-engine">
+				<div class="container">
+					<div class="answer-preview">
+						<h2 style="text-align: center; margin-bottom: 1rem; font-size: 2rem; color: #2d3748;">
+							Answer Engine: Educated Faith Responses
+						</h2>
+						<p style="text-align: center; color: #718096; margin-bottom: 2rem;">
+							No more "just have faith" answers. Get evidence-based responses with scholarly citations.
+						</p>
+						
+						<div class="questions-grid">
+							{featuredQuestions.map((question) => (
+								<div class="question-card">
+									<h4 class="question-title">{question.data.title || question.slug}</h4>
+									<div class="question-meta">
+										<span style="text-transform: capitalize;">{question.data.category}</span>
+										<span class={`difficulty-badge difficulty-${question.data.difficulty}`}>
+											{question.data.difficulty}
+										</span>
+									</div>
+								</div>
+							))}
+						</div>
+						
+						<div style="text-align: center; margin-top: 2rem;">
+							<a href="/faith-answers" class="cta-button">Try the Answer Engine →</a>
+						</div>
+					</div>
+				</div>
+			</section>
+		</main>
+
+		<footer>
+			<div class="container">
+				<p>&copy; 2026 NexusFaith. Educated faith, not blind faith. ✝️🔬</p>
+			</div>
+		</footer>
 	</body>
 </html>

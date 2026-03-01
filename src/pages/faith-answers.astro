@@ -1,0 +1,505 @@
+---
+import { getCollection } from 'astro:content';
+
+// Get all questions for the Answer Engine
+const questions = await getCollection('questions');
+
+// Group questions by category
+const questionsByCategory = questions.reduce((acc, question) => {
+  if (!acc[question.data.category]) {
+    acc[question.data.category] = [];
+  }
+  acc[question.data.category].push(question);
+  return acc;
+}, {});
+
+const categories = [
+  { id: 'evolution', name: 'Evolution & Creation', icon: '🧬' },
+  { id: 'suffering', name: 'Problem of Evil', icon: '😢' },
+  { id: 'jesus', name: 'Historical Jesus', icon: '✝️' },
+  { id: 'finetuning', name: 'Fine-Tuning', icon: '⚡' },
+  { id: 'ai', name: 'AI & Consciousness', icon: '🤖' },
+  { id: 'prayer', name: 'Prayer & Doubt', icon: '🙏' }
+];
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Faith Answers - NexusFaith Answer Engine</title>
+		<meta name="description" content="Get educated, evidence-based answers to tough faith questions. No more 'just have faith' responses.">
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+			
+			body {
+				font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+				line-height: 1.6;
+				color: #333;
+				background: #f7fafc;
+				min-height: 100vh;
+			}
+			
+			.container {
+				max-width: 1200px;
+				margin: 0 auto;
+				padding: 0 20px;
+			}
+			
+			header {
+				background: white;
+				box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+				position: sticky;
+				top: 0;
+				z-index: 100;
+			}
+			
+			nav {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				padding: 1rem 0;
+			}
+			
+			.logo {
+				font-size: 1.5rem;
+				font-weight: 700;
+				color: #4a5568;
+				text-decoration: none;
+			}
+			
+			.nav-links {
+				display: flex;
+				list-style: none;
+				gap: 2rem;
+			}
+			
+			.nav-links a {
+				color: #4a5568;
+				text-decoration: none;
+				font-weight: 500;
+				transition: color 0.3s;
+			}
+			
+			.nav-links a:hover {
+				color: #667eea;
+			}
+			
+			.hero {
+				background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+				color: white;
+				padding: 3rem 0;
+				text-align: center;
+			}
+			
+			.hero h1 {
+				font-size: 2.5rem;
+				font-weight: 700;
+				margin-bottom: 1rem;
+			}
+			
+			.hero p {
+				font-size: 1.1rem;
+				opacity: 0.9;
+			}
+			
+			.answer-interface {
+				padding: 3rem 0;
+			}
+			
+			.question-input {
+				background: white;
+				border-radius: 15px;
+				padding: 2rem;
+				box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+				margin-bottom: 2rem;
+			}
+			
+			.input-group {
+				display: flex;
+				flex-direction: column;
+				gap: 1rem;
+			}
+			
+			.question-field {
+				width: 100%;
+				padding: 1rem;
+				border: 2px solid #e2e8f0;
+				border-radius: 10px;
+				font-size: 1rem;
+				resize: vertical;
+				min-height: 100px;
+			}
+			
+			.question-field:focus {
+				outline: none;
+				border-color: #667eea;
+			}
+			
+			.controls {
+				display: flex;
+				gap: 1rem;
+				align-items: center;
+				flex-wrap: wrap;
+			}
+			
+			.difficulty-select, .category-select {
+				padding: 0.5rem 1rem;
+				border: 2px solid #e2e8f0;
+				border-radius: 8px;
+				background: white;
+			}
+			
+			.ask-button {
+				background: #667eea;
+				color: white;
+				border: none;
+				padding: 0.75rem 2rem;
+				border-radius: 8px;
+				font-weight: 600;
+				cursor: pointer;
+				transition: all 0.3s;
+			}
+			
+			.ask-button:hover {
+				background: #5a67d8;
+				transform: translateY(-2px);
+			}
+			
+			.categories {
+				background: white;
+				border-radius: 15px;
+				padding: 2rem;
+				box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+				margin-bottom: 2rem;
+			}
+			
+			.categories h3 {
+				margin-bottom: 1.5rem;
+				color: #2d3748;
+				text-align: center;
+			}
+			
+			.category-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+				gap: 1rem;
+			}
+			
+			.category-btn {
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+				padding: 1rem;
+				border: 2px solid #e2e8f0;
+				border-radius: 10px;
+				background: white;
+				text-decoration: none;
+				color: #4a5568;
+				transition: all 0.3s;
+				cursor: pointer;
+			}
+			
+			.category-btn:hover, .category-btn.active {
+				border-color: #667eea;
+				background: #edf2f7;
+				color: #667eea;
+			}
+			
+			.results {
+				background: white;
+				border-radius: 15px;
+				padding: 2rem;
+				box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+				display: none;
+			}
+			
+			.results.active {
+				display: block;
+			}
+			
+			.answer-card {
+				border-left: 4px solid #667eea;
+				padding: 1.5rem;
+				background: #f7fafc;
+				border-radius: 0 10px 10px 0;
+				margin-bottom: 1.5rem;
+			}
+			
+			.answer-title {
+				color: #2d3748;
+				margin-bottom: 1rem;
+				font-size: 1.2rem;
+			}
+			
+			.answer-content {
+				color: #4a5568;
+				margin-bottom: 1rem;
+			}
+			
+			.answer-meta {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				font-size: 0.9rem;
+				color: #718096;
+				border-top: 1px solid #e2e8f0;
+				padding-top: 1rem;
+			}
+			
+			.scholars-list {
+				font-weight: 500;
+			}
+			
+			.difficulty-badge {
+				padding: 0.2rem 0.5rem;
+				border-radius: 15px;
+				font-size: 0.8rem;
+				font-weight: 500;
+				background: #fef5e7;
+				color: #d69e2e;
+			}
+			
+			.loading {
+				text-align: center;
+				padding: 2rem;
+				color: #718096;
+			}
+			
+			@media (max-width: 768px) {
+				.hero h1 {
+					font-size: 2rem;
+				}
+				
+				.controls {
+					flex-direction: column;
+					align-items: stretch;
+				}
+				
+				.category-grid {
+					grid-template-columns: 1fr;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<nav class="container">
+				<a href="/" class="logo">✝️ NexusFaith</a>
+				<ul class="nav-links">
+					<li><a href="/">Home</a></li>
+					<li><a href="/faith-answers" style="color: #667eea;">Faith Answers</a></li>
+					<li><a href="/articles">Articles</a></li>
+					<li><a href="/scholars">Scholars</a></li>
+					<li><a href="/about">About</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<section class="hero">
+			<div class="container">
+				<h1>🧠 Faith Answers Engine</h1>
+				<p>Educated faith responses backed by scholarship and evidence</p>
+			</div>
+		</section>
+
+		<main class="container answer-interface">
+			<div class="question-input">
+				<h3 style="margin-bottom: 1rem; color: #2d3748;">Ask Your Question</h3>
+				<div class="input-group">
+					<textarea 
+						id="questionText" 
+						class="question-field" 
+						placeholder="Example: How do I explain evolution to my Christian kid?"
+					></textarea>
+					<div class="controls">
+						<select id="difficultySelect" class="difficulty-select">
+							<option value="teen">Teen (13-18)</option>
+							<option value="elementary">Elementary (8-12)</option>
+							<option value="advanced">Advanced</option>
+						</select>
+						<select id="categorySelect" class="category-select">
+							<option value="">Auto-detect category</option>
+							{categories.map(cat => (
+								<option value={cat.id}>{cat.name}</option>
+							))}
+						</select>
+						<button id="askButton" class="ask-button">Get Answer</button>
+					</div>
+				</div>
+			</div>
+
+			<div class="categories">
+				<h3>Or Browse by Category</h3>
+				<div class="category-grid">
+					{categories.map(category => (
+						<div class="category-btn" data-category={category.id}>
+							<span style="font-size: 1.2rem;">{category.icon}</span>
+							<span>{category.name}</span>
+						</div>
+					))}
+				</div>
+			</div>
+
+			<div id="results" class="results">
+				<div id="loading" class="loading">
+					<div>🔄 Finding educated faith response...</div>
+				</div>
+				<div id="answers"></div>
+			</div>
+		</main>
+
+		<script define:vars={{ questionsData: Object.fromEntries(
+			Object.entries(questionsByCategory).map(([category, questions]) => [
+				category,
+				questions.map(q => ({
+					title: q.slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+					content: q.body || "Detailed answer coming soon...",
+					scholars: q.data.scholars,
+					difficulty: q.data.difficulty,
+					citations: q.data.citations || []
+				}))
+			])
+		) }}>
+			// Question data from server - available as questionsData
+
+			// DOM elements
+			const questionInput = document.getElementById('questionText');
+			const difficultySelect = document.getElementById('difficultySelect');
+			const categorySelect = document.getElementById('categorySelect');
+			const askButton = document.getElementById('askButton');
+			const results = document.getElementById('results');
+			const loading = document.getElementById('loading');
+			const answers = document.getElementById('answers');
+			const categoryBtns = document.querySelectorAll('.category-btn');
+
+			// Event listeners
+			askButton.addEventListener('click', handleQuestion);
+			categoryBtns.forEach(btn => {
+				btn.addEventListener('click', (e) => {
+					const category = e.currentTarget.dataset.category;
+					showCategoryQuestions(category);
+				});
+			});
+
+			function handleQuestion() {
+				const question = questionInput.value.trim();
+				if (!question) return;
+
+				showResults();
+				showLoading();
+
+				// Simulate processing time
+				setTimeout(() => {
+					const category = detectCategory(question) || categorySelect.value;
+					const difficulty = difficultySelect.value;
+					
+					const matchedAnswers = findMatchingAnswers(question, category, difficulty);
+					displayAnswers(matchedAnswers);
+				}, 1500);
+			}
+
+			function showCategoryQuestions(category) {
+				const categoryQuestions = questionsData[category] || [];
+				showResults();
+				displayAnswers(categoryQuestions);
+			}
+
+			function detectCategory(question) {
+				const keywords = {
+					evolution: ['evolution', 'creation', 'darwin', 'species', 'natural selection'],
+					suffering: ['evil', 'suffering', 'pain', 'bad things', 'tragedy'],
+					jesus: ['jesus', 'christ', 'resurrection', 'historical', 'gospel'],
+					finetuning: ['fine', 'tuning', 'constants', 'universe', 'physics'],
+					ai: ['ai', 'artificial', 'intelligence', 'consciousness', 'robot'],
+					prayer: ['prayer', 'pray', 'doubt', 'faith', 'belief']
+				};
+
+				const lowerQ = question.toLowerCase();
+				for (const [category, words] of Object.entries(keywords)) {
+					if (words.some(word => lowerQ.includes(word))) {
+						return category;
+					}
+				}
+				return null;
+			}
+
+			function findMatchingAnswers(question, category, difficulty) {
+				let matches = [];
+				
+				if (category && questionsData[category]) {
+					matches = questionsData[category].filter(q => 
+						q.difficulty === difficulty
+					);
+				}
+
+				// If no specific matches, return first available answer in any category
+				if (matches.length === 0) {
+					for (const [cat, questions] of Object.entries(questionsData)) {
+						if (questions.length > 0) {
+							matches = [questions[0]];
+							break;
+						}
+					}
+				}
+
+				return matches;
+			}
+
+			function showResults() {
+				results.classList.add('active');
+				results.scrollIntoView({ behavior: 'smooth' });
+			}
+
+			function showLoading() {
+				loading.style.display = 'block';
+				answers.innerHTML = '';
+			}
+
+			function displayAnswers(answerList) {
+				loading.style.display = 'none';
+				
+				if (answerList.length === 0) {
+					answers.innerHTML = '<div class="answer-card"><p>No answers found. Please try a different question or category.</p></div>';
+					return;
+				}
+
+				answers.innerHTML = answerList.map(answer => `
+					<div class="answer-card">
+						<h4 class="answer-title">${answer.title}</h4>
+						<div class="answer-content">
+							<p>${answer.content}</p>
+						</div>
+						<div class="answer-meta">
+							<div class="scholars-list">
+								<strong>Scholars:</strong> ${answer.scholars.join(', ')}
+							</div>
+							<div class="difficulty-badge">${answer.difficulty}</div>
+						</div>
+					</div>
+				`).join('');
+			}
+
+			// Example questions for quick testing
+			const exampleQuestions = [
+				"How do I explain evolution to my Christian kid?",
+				"Why does God allow suffering?",
+				"Is there historical evidence for Jesus?",
+				"How does fine-tuning point to God?",
+				"Can AI have a soul?",
+				"What if my prayers aren't answered?"
+			];
+
+			// Populate with random example on load
+			window.addEventListener('load', () => {
+				const randomExample = exampleQuestions[Math.floor(Math.random() * exampleQuestions.length)];
+				questionInput.placeholder = `Example: ${randomExample}`;
+			});
+		</script>
+	</body>
+</html>
