@@ -1,0 +1,310 @@
+---
+export interface Props {
+  title: string;
+  author?: string;
+  source?: string;
+  year?: number;
+  url?: string;
+  quote?: string;
+  type?: 'book' | 'journal' | 'website' | 'video' | 'lecture';
+  credibilityLevel?: 'high' | 'medium' | 'low';
+  difficulty?: 'beginner' | 'intermediate' | 'advanced';
+}
+
+const { 
+  title, 
+  author, 
+  source, 
+  year, 
+  url, 
+  quote, 
+  type = 'book',
+  credibilityLevel = 'high',
+  difficulty = 'intermediate'
+} = Astro.props;
+
+const typeIcons = {
+  book: '📚',
+  journal: '🔬',
+  website: '🌐',
+  video: '📹',
+  lecture: '🎓'
+};
+
+const credibilityColors = {
+  high: 'rgba(16, 185, 129, 0.2)',
+  medium: 'rgba(245, 158, 11, 0.2)',
+  low: 'rgba(239, 68, 68, 0.2)'
+};
+
+const difficultyLabels = {
+  beginner: 'Accessible',
+  intermediate: 'Moderate',
+  advanced: 'Advanced'
+};
+---
+
+<div class={`citation-card citation-card--${credibilityLevel}`}>
+  <div class="citation-card__header">
+    <span class="citation-card__type-icon">{typeIcons[type]}</span>
+    <div class="citation-card__meta">
+      <span class={`citation-card__difficulty citation-card__difficulty--${difficulty}`}>
+        {difficultyLabels[difficulty]}
+      </span>
+      <span class={`citation-card__credibility citation-card__credibility--${credibilityLevel}`}>
+        {credibilityLevel.toUpperCase()} CREDIBILITY
+      </span>
+    </div>
+  </div>
+
+  <div class="citation-card__content">
+    <h4 class="citation-card__title">
+      {url ? (
+        <a href={url} target="_blank" rel="noopener noreferrer">{title}</a>
+      ) : title}
+    </h4>
+    
+    {author && (
+      <p class="citation-card__author">by {author}</p>
+    )}
+    
+    <div class="citation-card__source">
+      {source && <span>{source}</span>}
+      {year && <span class="citation-card__year">({year})</span>}
+    </div>
+
+    {quote && (
+      <blockquote class="citation-card__quote">
+        <p>"{quote}"</p>
+      </blockquote>
+    )}
+  </div>
+
+  <div class="citation-card__footer">
+    <span class="citation-card__type">{type.charAt(0).toUpperCase() + type.slice(1)}</span>
+    {url && (
+      <a href={url} target="_blank" rel="noopener noreferrer" class="citation-card__link">
+        View Source →
+      </a>
+    )}
+  </div>
+</div>
+
+<style>
+  .citation-card {
+    background: linear-gradient(135deg, 
+      rgba(255, 255, 255, 0.9) 0%, 
+      rgba(255, 255, 255, 0.7) 100%);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 16px 0;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .citation-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  }
+
+  .citation-card--high::before {
+    background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+  }
+
+  .citation-card--medium::before {
+    background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+  }
+
+  .citation-card--low::before {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  }
+
+  .citation-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    border-color: rgba(59, 130, 246, 0.3);
+  }
+
+  .citation-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+
+  .citation-card__type-icon {
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, 
+      rgba(59, 130, 246, 0.1) 0%, 
+      rgba(139, 92, 246, 0.1) 100%);
+    border-radius: 50%;
+  }
+
+  .citation-card__meta {
+    display: flex;
+    gap: 8px;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .citation-card__difficulty,
+  .citation-card__credibility {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .citation-card__difficulty--beginner {
+    background: rgba(16, 185, 129, 0.2);
+    color: #059669;
+  }
+
+  .citation-card__difficulty--intermediate {
+    background: rgba(245, 158, 11, 0.2);
+    color: #d97706;
+  }
+
+  .citation-card__difficulty--advanced {
+    background: rgba(239, 68, 68, 0.2);
+    color: #dc2626;
+  }
+
+  .citation-card__credibility--high {
+    background: rgba(16, 185, 129, 0.2);
+    color: #059669;
+  }
+
+  .citation-card__credibility--medium {
+    background: rgba(245, 158, 11, 0.2);
+    color: #d97706;
+  }
+
+  .citation-card__credibility--low {
+    background: rgba(239, 68, 68, 0.2);
+    color: #dc2626;
+  }
+
+  .citation-card__title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin: 0 0 8px 0;
+    line-height: 1.4;
+  }
+
+  .citation-card__title a {
+    color: #1e40af;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .citation-card__title a:hover {
+    color: #3b82f6;
+    text-decoration: underline;
+  }
+
+  .citation-card__author {
+    font-size: 1rem;
+    color: #6b7280;
+    margin: 0 0 8px 0;
+    font-weight: 500;
+  }
+
+  .citation-card__source {
+    font-size: 0.9rem;
+    color: #9ca3af;
+    margin: 0 0 16px 0;
+  }
+
+  .citation-card__year {
+    font-weight: 600;
+  }
+
+  .citation-card__quote {
+    background: linear-gradient(135deg, 
+      rgba(59, 130, 246, 0.05) 0%, 
+      rgba(139, 92, 246, 0.05) 100%);
+    border-left: 3px solid #3b82f6;
+    padding: 12px 16px;
+    margin: 16px 0;
+    border-radius: 0 6px 6px 0;
+    font-style: italic;
+  }
+
+  .citation-card__quote p {
+    margin: 0;
+    line-height: 1.6;
+    color: #374151;
+  }
+
+  .citation-card__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  .citation-card__type {
+    font-size: 0.8rem;
+    color: #6b7280;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .citation-card__link {
+    color: #3b82f6;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .citation-card__link:hover {
+    color: #1e40af;
+  }
+
+  /* Mobile responsiveness */
+  @media (max-width: 768px) {
+    .citation-card {
+      padding: 16px;
+      margin: 12px 0;
+    }
+
+    .citation-card__header {
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .citation-card__meta {
+      align-items: flex-start;
+      flex-direction: row;
+    }
+
+    .citation-card__title {
+      font-size: 1.2rem;
+    }
+
+    .citation-card__footer {
+      flex-direction: column;
+      gap: 12px;
+      align-items: flex-start;
+    }
+  }
+</style>

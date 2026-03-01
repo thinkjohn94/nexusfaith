@@ -1,0 +1,604 @@
+---
+export interface Props {
+  currentPath?: string;
+  breadcrumbs?: Array<{label: string, href: string}>;
+  showProgress?: boolean;
+  totalSteps?: number;
+  currentStep?: number;
+}
+
+const { 
+  currentPath = '',
+  breadcrumbs = [],
+  showProgress = false,
+  totalSteps = 1,
+  currentStep = 1
+} = Astro.props;
+
+// Navigation structure for logical minds
+const navStructure = [
+  {
+    label: 'Evidence Hub',
+    href: '/faith-answers',
+    icon: '🔬',
+    description: 'Scientific evidence for faith',
+    categories: [
+      'Cosmology & Fine-Tuning',
+      'Biology & Information',
+      'Physics & Mathematics',
+      'Philosophy & Logic'
+    ]
+  },
+  {
+    label: 'Scholar Resources',
+    href: '/scholars',
+    icon: '👨‍🎓',
+    description: 'Academic authorities',
+    categories: [
+      'Peer-Reviewed Research',
+      'Credentialed Experts',
+      'Institution Affiliations',
+      'Publication Records'
+    ]
+  },
+  {
+    label: 'Training Lab',
+    href: '/conversation-trainer',
+    icon: '🏋️‍♂️',
+    description: 'Practice apologetics skills',
+    categories: [
+      'Beginner Scenarios',
+      'Intermediate Challenges',
+      'Advanced Debates',
+      'Real-World Practice'
+    ]
+  },
+  {
+    label: 'Research Center',
+    href: '/research',
+    icon: '📊',
+    description: 'Latest findings & studies',
+    categories: [
+      'Recent Publications',
+      'Ongoing Research',
+      'Data Analysis',
+      'Trend Reports'
+    ]
+  }
+];
+
+// Auto-generate breadcrumbs based on current path
+const generateBreadcrumbs = (path: string) => {
+  const pathParts = path.split('/').filter(part => part);
+  const crumbs = [{ label: 'Home', href: '/' }];
+  
+  let currentHref = '';
+  pathParts.forEach((part, index) => {
+    currentHref += '/' + part;
+    const navItem = navStructure.find(item => item.href === currentHref);
+    if (navItem) {
+      crumbs.push({ label: navItem.label, href: currentHref });
+    } else {
+      // Generate label from path part
+      const label = part.split('-').map(word => 
+        word.charAt(0).toUpperCase() + word.slice(1)
+      ).join(' ');
+      crumbs.push({ label, href: currentHref });
+    }
+  });
+  
+  return crumbs;
+};
+
+const finalBreadcrumbs = breadcrumbs.length > 0 ? breadcrumbs : generateBreadcrumbs(currentPath);
+---
+
+<nav class="enhanced-navigation" role="navigation" aria-label="Main navigation">
+  <!-- Breadcrumb Navigation -->
+  {finalBreadcrumbs.length > 1 && (
+    <div class="breadcrumb-container">
+      <ol class="breadcrumb" aria-label="Breadcrumb navigation">
+        {finalBreadcrumbs.map((crumb, index) => (
+          <li class="breadcrumb__item">
+            {index < finalBreadcrumbs.length - 1 ? (
+              <a href={crumb.href} class="breadcrumb__link">
+                {crumb.label}
+              </a>
+            ) : (
+              <span class="breadcrumb__current" aria-current="page">
+                {crumb.label}
+              </span>
+            )}
+            {index < finalBreadcrumbs.length - 1 && (
+              <span class="breadcrumb__separator" aria-hidden="true">→</span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </div>
+  )}
+
+  <!-- Progress Indicator -->
+  {showProgress && (
+    <div class="progress-container">
+      <div class="progress-info">
+        <span class="progress-label">Progress</span>
+        <span class="progress-text">{currentStep} of {totalSteps}</span>
+      </div>
+      <div class="progress-bar">
+        <div 
+          class="progress-fill" 
+          style={`width: ${(currentStep / totalSteps) * 100}%`}
+          role="progressbar"
+          aria-valuenow={currentStep}
+          aria-valuemin="0"
+          aria-valuemax={totalSteps}
+        ></div>
+      </div>
+    </div>
+  )}
+
+  <!-- Main Navigation Menu -->
+  <div class="nav-main">
+    <div class="nav-brand">
+      <a href="/" class="nav-brand__link">
+        <span class="nav-brand__icon">✝️🔬</span>
+        <span class="nav-brand__text">NexusFaith</span>
+      </a>
+    </div>
+
+    <ul class="nav-menu" role="menubar">
+      {navStructure.map(item => (
+        <li class="nav-item" role="none">
+          <a 
+            href={item.href} 
+            class={`nav-link ${currentPath.startsWith(item.href) ? 'nav-link--active' : ''}`}
+            role="menuitem"
+            aria-describedby={`nav-desc-${item.href.replace('/', '')}`}
+          >
+            <span class="nav-link__icon">{item.icon}</span>
+            <span class="nav-link__text">{item.label}</span>
+          </a>
+          
+          <!-- Hover Description -->
+          <div 
+            class="nav-description" 
+            id={`nav-desc-${item.href.replace('/', '')}`}
+            role="tooltip"
+          >
+            <p class="nav-description__text">{item.description}</p>
+            <ul class="nav-description__categories">
+              {item.categories.map(category => (
+                <li class="nav-description__category">{category}</li>
+              ))}
+            </ul>
+          </div>
+        </li>
+      ))}
+    </ul>
+
+    <!-- Search Integration -->
+    <div class="nav-search">
+      <button 
+        class="search-trigger" 
+        aria-label="Open search"
+        onclick="document.querySelector('.search-modal')?.classList.add('search-modal--open')"
+      >
+        <span class="search-trigger__icon">🔍</span>
+        <span class="search-trigger__text">Search Evidence</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Navigation Toggle -->
+  <button 
+    class="nav-toggle"
+    aria-label="Toggle navigation menu"
+    aria-expanded="false"
+    onclick="this.parentElement.classList.toggle('enhanced-navigation--open'); this.setAttribute('aria-expanded', this.parentElement.classList.contains('enhanced-navigation--open'))"
+  >
+    <span class="nav-toggle__line"></span>
+    <span class="nav-toggle__line"></span>
+    <span class="nav-toggle__line"></span>
+  </button>
+</nav>
+
+<!-- Skip Link for Accessibility -->
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<style>
+  .enhanced-navigation {
+    background: linear-gradient(135deg, 
+      rgba(255, 255, 255, 0.95) 0%, 
+      rgba(249, 250, 251, 0.95) 100%);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(229, 231, 235, 0.8);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    padding: 0 20px;
+  }
+
+  /* Skip Link */
+  .skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: #000;
+    color: #fff;
+    padding: 8px;
+    text-decoration: none;
+    z-index: 2000;
+    border-radius: 0 0 4px 4px;
+    transition: top 0.3s;
+  }
+
+  .skip-link:focus {
+    top: 0;
+  }
+
+  /* Breadcrumbs */
+  .breadcrumb-container {
+    padding: 12px 0 8px 0;
+    border-bottom: 1px solid rgba(229, 231, 235, 0.6);
+  }
+
+  .breadcrumb {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .breadcrumb__item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .breadcrumb__link {
+    color: #6b7280;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+  }
+
+  .breadcrumb__link:hover {
+    color: #3b82f6;
+    background: rgba(59, 130, 246, 0.1);
+  }
+
+  .breadcrumb__current {
+    color: #1f2937;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 4px 8px;
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: 6px;
+  }
+
+  .breadcrumb__separator {
+    color: #d1d5db;
+    font-weight: 300;
+  }
+
+  /* Progress Indicator */
+  .progress-container {
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(229, 231, 235, 0.6);
+  }
+
+  .progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .progress-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #374151;
+  }
+
+  .progress-text {
+    font-size: 0.8rem;
+    color: #6b7280;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 4px;
+    background: #e5e7eb;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%);
+    border-radius: 2px;
+    transition: width 0.5s ease;
+  }
+
+  /* Main Navigation */
+  .nav-main {
+    display: flex;
+    align-items: center;
+    height: 70px;
+    gap: 40px;
+  }
+
+  .nav-brand__link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: #1f2937;
+    font-weight: 800;
+    font-size: 1.3rem;
+  }
+
+  .nav-brand__icon {
+    font-size: 1.5rem;
+  }
+
+  .nav-menu {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 8px;
+    flex: 1;
+  }
+
+  .nav-item {
+    position: relative;
+  }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    text-decoration: none;
+    color: #6b7280;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .nav-link:hover,
+  .nav-link--active {
+    color: #3b82f6;
+    background: rgba(59, 130, 246, 0.1);
+  }
+
+  .nav-link--active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 16px;
+    right: 16px;
+    height: 2px;
+    background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%);
+    border-radius: 1px;
+  }
+
+  .nav-link__icon {
+    font-size: 1.1rem;
+  }
+
+  .nav-link__text {
+    font-size: 0.95rem;
+  }
+
+  /* Navigation Descriptions */
+  .nav-description {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 16px;
+    min-width: 280px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-50%) translateY(-8px);
+    transition: all 0.3s ease;
+    z-index: 100;
+  }
+
+  .nav-item:hover .nav-description {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .nav-description__text {
+    margin: 0 0 12px 0;
+    font-size: 0.9rem;
+    color: #374151;
+    font-weight: 500;
+  }
+
+  .nav-description__categories {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav-description__category {
+    font-size: 0.8rem;
+    color: #6b7280;
+    padding: 2px 0;
+    position: relative;
+    padding-left: 12px;
+  }
+
+  .nav-description__category::before {
+    content: '•';
+    color: #3b82f6;
+    position: absolute;
+    left: 0;
+  }
+
+  /* Search */
+  .nav-search {
+    margin-left: auto;
+  }
+
+  .search-trigger {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 8px;
+    color: #3b82f6;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .search-trigger:hover {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: rgba(59, 130, 246, 0.3);
+  }
+
+  .search-trigger__text {
+    font-size: 0.9rem;
+  }
+
+  /* Mobile Navigation */
+  .nav-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+  }
+
+  .nav-toggle__line {
+    width: 20px;
+    height: 2px;
+    background: #374151;
+    transition: all 0.3s ease;
+  }
+
+  /* Mobile Styles */
+  @media (max-width: 1024px) {
+    .nav-main {
+      gap: 20px;
+    }
+
+    .nav-link__text {
+      display: none;
+    }
+
+    .nav-description {
+      min-width: 200px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .enhanced-navigation {
+      padding: 0 16px;
+    }
+
+    .nav-main {
+      height: 60px;
+      gap: 16px;
+    }
+
+    .nav-toggle {
+      display: flex;
+      margin-left: auto;
+    }
+
+    .nav-menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border-top: 1px solid #e5e7eb;
+      flex-direction: column;
+      padding: 16px;
+      gap: 0;
+      transform: translateY(-100%);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .enhanced-navigation--open .nav-menu {
+      transform: translateY(0);
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .nav-link {
+      width: 100%;
+      justify-content: flex-start;
+      padding: 16px;
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    .nav-link__text {
+      display: block;
+    }
+
+    .nav-description {
+      position: static;
+      transform: none;
+      opacity: 1;
+      visibility: visible;
+      margin-top: 8px;
+      margin-left: 24px;
+    }
+
+    .enhanced-navigation--open .nav-toggle__line:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+
+    .enhanced-navigation--open .nav-toggle__line:nth-child(2) {
+      opacity: 0;
+    }
+
+    .enhanced-navigation--open .nav-toggle__line:nth-child(3) {
+      transform: rotate(-45deg) translate(7px, -6px);
+    }
+
+    .nav-search {
+      margin-left: 0;
+      order: -1;
+    }
+
+    .search-trigger__text {
+      display: none;
+    }
+
+    .breadcrumb {
+      font-size: 0.8rem;
+    }
+
+    .breadcrumb-container {
+      padding: 8px 0;
+    }
+  }
+</style>

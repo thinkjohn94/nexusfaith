@@ -1,0 +1,259 @@
+---
+export interface Props {
+  name: string;
+  credentials?: string;
+  affiliation?: string;
+  photo?: string;
+  bio?: string;
+  expertise?: string[];
+  quote?: string;
+  publications?: string[];
+  size?: 'compact' | 'full';
+}
+
+const { 
+  name, 
+  credentials, 
+  affiliation, 
+  photo, 
+  bio, 
+  expertise = [], 
+  quote, 
+  publications = [], 
+  size = 'full' 
+} = Astro.props;
+---
+
+<div class={`scholar-profile scholar-profile--${size}`}>
+  <div class="scholar-profile__header">
+    {photo && (
+      <div class="scholar-profile__photo">
+        <img src={photo} alt={name} loading="lazy" />
+      </div>
+    )}
+    <div class="scholar-profile__info">
+      <h3 class="scholar-profile__name">{name}</h3>
+      {credentials && (
+        <p class="scholar-profile__credentials">{credentials}</p>
+      )}
+      {affiliation && (
+        <p class="scholar-profile__affiliation">{affiliation}</p>
+      )}
+    </div>
+  </div>
+
+  {expertise.length > 0 && (
+    <div class="scholar-profile__expertise">
+      {expertise.map(area => (
+        <span class="expertise-tag">{area}</span>
+      ))}
+    </div>
+  )}
+
+  {quote && size === 'full' && (
+    <blockquote class="scholar-profile__quote">
+      <p>"{quote}"</p>
+      <cite>— {name}</cite>
+    </blockquote>
+  )}
+
+  {bio && size === 'full' && (
+    <div class="scholar-profile__bio">
+      <p>{bio}</p>
+    </div>
+  )}
+
+  {publications.length > 0 && size === 'full' && (
+    <div class="scholar-profile__publications">
+      <h4>Key Publications</h4>
+      <ul>
+        {publications.map(pub => (
+          <li>{pub}</li>
+        ))}
+      </ul>
+    </div>
+  )}
+</div>
+
+<style>
+  .scholar-profile {
+    background: linear-gradient(135deg, 
+      rgba(255, 255, 255, 0.1) 0%, 
+      rgba(255, 255, 255, 0.05) 100%);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 24px;
+    margin: 16px 0;
+    transition: all 0.3s ease;
+  }
+
+  .scholar-profile:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border-color: rgba(59, 130, 246, 0.3);
+  }
+
+  .scholar-profile--compact {
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .scholar-profile__header {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .scholar-profile--compact .scholar-profile__header {
+    margin-bottom: 0;
+    flex: 1;
+  }
+
+  .scholar-profile__photo {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 2px solid rgba(59, 130, 246, 0.3);
+  }
+
+  .scholar-profile--compact .scholar-profile__photo {
+    width: 60px;
+    height: 60px;
+  }
+
+  .scholar-profile__photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .scholar-profile__name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 4px 0;
+    background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .scholar-profile--compact .scholar-profile__name {
+    font-size: 1.2rem;
+  }
+
+  .scholar-profile__credentials {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin: 0 0 4px 0;
+    font-weight: 500;
+  }
+
+  .scholar-profile__affiliation {
+    font-size: 0.9rem;
+    color: #9ca3af;
+    margin: 0;
+  }
+
+  .scholar-profile__expertise {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 16px 0;
+  }
+
+  .expertise-tag {
+    background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+
+  .scholar-profile__quote {
+    background: linear-gradient(135deg, 
+      rgba(59, 130, 246, 0.1) 0%, 
+      rgba(139, 92, 246, 0.1) 100%);
+    border-left: 4px solid #3b82f6;
+    padding: 16px 20px;
+    margin: 16px 0;
+    border-radius: 0 8px 8px 0;
+    font-style: italic;
+  }
+
+  .scholar-profile__quote p {
+    margin: 0 0 8px 0;
+    font-size: 1.1rem;
+    line-height: 1.6;
+  }
+
+  .scholar-profile__quote cite {
+    font-size: 0.9rem;
+    color: #6b7280;
+    font-weight: 500;
+  }
+
+  .scholar-profile__bio p {
+    line-height: 1.7;
+    color: #374151;
+  }
+
+  .scholar-profile__publications {
+    margin-top: 20px;
+  }
+
+  .scholar-profile__publications h4 {
+    color: #1f2937;
+    margin: 0 0 12px 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  .scholar-profile__publications ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .scholar-profile__publications li {
+    padding: 8px 0;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 0.9rem;
+    color: #4b5563;
+  }
+
+  .scholar-profile__publications li:last-child {
+    border-bottom: none;
+  }
+
+  /* Mobile responsiveness */
+  @media (max-width: 768px) {
+    .scholar-profile {
+      padding: 16px;
+      margin: 12px 0;
+    }
+
+    .scholar-profile__header {
+      flex-direction: column;
+      text-align: center;
+      gap: 12px;
+    }
+
+    .scholar-profile__photo {
+      align-self: center;
+    }
+
+    .scholar-profile__name {
+      font-size: 1.3rem;
+    }
+
+    .scholar-profile__quote {
+      padding: 12px 16px;
+    }
+  }
+</style>

@@ -1,0 +1,652 @@
+---
+export interface Props {
+  topic: string;
+  approaches: Array<{
+    name: string;
+    scholar?: string;
+    strength: 'high' | 'medium' | 'low';
+    difficulty: 'beginner' | 'intermediate' | 'advanced';
+    evidence: string[];
+    summary: string;
+    pros: string[];
+    cons: string[];
+    bestFor: string;
+    sources?: string[];
+  }>;
+  userLevel?: 'beginner' | 'intermediate' | 'advanced';
+}
+
+const { 
+  topic, 
+  approaches = [],
+  userLevel = 'intermediate'
+} = Astro.props;
+
+const strengthColors = {
+  high: { bg: 'rgba(16, 185, 129, 0.1)', text: '#059669', border: '#10b981' },
+  medium: { bg: 'rgba(245, 158, 11, 0.1)', text: '#d97706', border: '#f59e0b' },
+  low: { bg: 'rgba(239, 68, 68, 0.1)', text: '#dc2626', border: '#ef4444' }
+};
+
+const difficultyIcons = {
+  beginner: '🟢',
+  intermediate: '🟡', 
+  advanced: '🔴'
+};
+
+const recommendApproach = (approaches: any[], userLevel: string) => {
+  // Logic to recommend best approach based on user level
+  const levelMatch = approaches.filter(a => a.difficulty === userLevel);
+  if (levelMatch.length > 0) {
+    return levelMatch.sort((a, b) => {
+      const strengthOrder = { high: 3, medium: 2, low: 1 };
+      return strengthOrder[b.strength] - strengthOrder[a.strength];
+    })[0];
+  }
+  return approaches[0];
+};
+
+const recommended = recommendApproach(approaches, userLevel);
+---
+
+<div class="approach-comparison">
+  <div class="comparison-header">
+    <h3 class="comparison-title">
+      <span class="comparison-icon">⚖️</span>
+      {topic} - Apologetic Approaches
+    </h3>
+    <p class="comparison-subtitle">
+      Compare different scholarly approaches to this topic. Choose the method that best fits your audience and expertise level.
+    </p>
+  </div>
+
+  {recommended && (
+    <div class="recommendation-banner">
+      <div class="recommendation-icon">💡</div>
+      <div class="recommendation-content">
+        <h4 class="recommendation-title">Recommended for {userLevel}s</h4>
+        <p class="recommendation-text">
+          <strong>{recommended.name}</strong> - {recommended.bestFor}
+        </p>
+      </div>
+    </div>
+  )}
+
+  <div class="comparison-grid">
+    {approaches.map((approach, index) => (
+      <div class={`approach-card ${approach === recommended ? 'approach-card--recommended' : ''}`}>
+        <div class="approach-header">
+          <div class="approach-meta">
+            <h4 class="approach-name">{approach.name}</h4>
+            {approach.scholar && (
+              <p class="approach-scholar">by {approach.scholar}</p>
+            )}
+          </div>
+          <div class="approach-indicators">
+            <div 
+              class="strength-indicator" 
+              style={`background: ${strengthColors[approach.strength].bg}; color: ${strengthColors[approach.strength].text}; border: 1px solid ${strengthColors[approach.strength].border}`}
+              title={`${approach.strength} strength argument`}
+            >
+              {approach.strength.toUpperCase()}
+            </div>
+            <div class="difficulty-indicator" title={`${approach.difficulty} level`}>
+              {difficultyIcons[approach.difficulty]} {approach.difficulty}
+            </div>
+          </div>
+        </div>
+
+        <div class="approach-summary">
+          <p>{approach.summary}</p>
+        </div>
+
+        <div class="approach-evidence">
+          <h5>Key Evidence</h5>
+          <ul>
+            {approach.evidence.map(item => (
+              <li>{item}</li>
+            ))}
+          </ul>
+        </div>
+
+        <div class="approach-analysis">
+          <div class="pros-cons">
+            <div class="pros">
+              <h6>✅ Strengths</h6>
+              <ul>
+                {approach.pros.map(pro => (
+                  <li>{pro}</li>
+                ))}
+              </ul>
+            </div>
+            <div class="cons">
+              <h6>⚠️ Limitations</h6>
+              <ul>
+                {approach.cons.map(con => (
+                  <li>{con}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="approach-footer">
+          <div class="best-for">
+            <strong>Best for:</strong> {approach.bestFor}
+          </div>
+          {approach.sources && approach.sources.length > 0 && (
+            <div class="approach-sources">
+              <details>
+                <summary>Sources ({approach.sources.length})</summary>
+                <ul class="sources-list">
+                  {approach.sources.map(source => (
+                    <li>{source}</li>
+                  ))}
+                </ul>
+              </details>
+            </div>
+          )}
+        </div>
+
+        {approach === recommended && (
+          <div class="recommended-badge">
+            <span>📍 Recommended</span>
+          </div>
+        )}
+      </div>
+    ))}
+  </div>
+
+  <div class="comparison-tools">
+    <div class="filter-controls">
+      <h5>Filter by:</h5>
+      <div class="filter-buttons">
+        <button class="filter-btn filter-btn--active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="beginner">Beginner</button>
+        <button class="filter-btn" data-filter="intermediate">Intermediate</button>
+        <button class="filter-btn" data-filter="advanced">Advanced</button>
+      </div>
+    </div>
+    
+    <div class="sort-controls">
+      <h5>Sort by:</h5>
+      <select class="sort-select">
+        <option value="strength">Argument Strength</option>
+        <option value="difficulty">Difficulty Level</option>
+        <option value="name">Approach Name</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="comparison-notes">
+    <h5>💡 Using This Comparison</h5>
+    <ul>
+      <li><strong>Consider your audience:</strong> Match the difficulty level to your listener's background</li>
+      <li><strong>Stack arguments:</strong> Combine multiple approaches for comprehensive responses</li>
+      <li><strong>Know limitations:</strong> Every approach has weaknesses - address them proactively</li>
+      <li><strong>Study sources:</strong> Deep knowledge of supporting evidence strengthens your position</li>
+    </ul>
+  </div>
+</div>
+
+<style>
+  .approach-comparison {
+    background: linear-gradient(135deg, 
+      rgba(255, 255, 255, 0.95) 0%, 
+      rgba(249, 250, 251, 0.95) 100%);
+    border: 1px solid rgba(229, 231, 235, 0.8);
+    border-radius: 16px;
+    padding: 32px;
+    margin: 24px 0;
+  }
+
+  .comparison-header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .comparison-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin: 0 0 12px 0;
+    color: #1f2937;
+  }
+
+  .comparison-icon {
+    font-size: 1.8rem;
+  }
+
+  .comparison-subtitle {
+    color: #6b7280;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin: 0;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .recommendation-banner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: linear-gradient(135deg, 
+      rgba(59, 130, 246, 0.1) 0%, 
+      rgba(16, 185, 129, 0.1) 100%);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 32px;
+  }
+
+  .recommendation-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+  }
+
+  .recommendation-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 4px 0;
+    color: #1f2937;
+  }
+
+  .recommendation-text {
+    color: #4b5563;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .comparison-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+
+  .approach-card {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(229, 231, 235, 0.8);
+    border-radius: 12px;
+    padding: 24px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .approach-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    border-color: rgba(59, 130, 246, 0.3);
+  }
+
+  .approach-card--recommended {
+    border: 2px solid #3b82f6;
+    background: linear-gradient(135deg, 
+      rgba(59, 130, 246, 0.05) 0%, 
+      rgba(255, 255, 255, 0.95) 100%);
+  }
+
+  .approach-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+
+  .approach-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin: 0 0 4px 0;
+    color: #1f2937;
+  }
+
+  .approach-scholar {
+    color: #6b7280;
+    font-size: 0.9rem;
+    margin: 0;
+    font-style: italic;
+  }
+
+  .approach-indicators {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-end;
+  }
+
+  .strength-indicator {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .difficulty-indicator {
+    font-size: 0.8rem;
+    color: #6b7280;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .approach-summary {
+    background: rgba(249, 250, 251, 0.8);
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+  }
+
+  .approach-summary p {
+    margin: 0;
+    line-height: 1.6;
+    color: #374151;
+  }
+
+  .approach-evidence h5 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 8px 0;
+  }
+
+  .approach-evidence ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 16px 0;
+  }
+
+  .approach-evidence li {
+    padding: 4px 0 4px 20px;
+    position: relative;
+    color: #4b5563;
+    font-size: 0.9rem;
+  }
+
+  .approach-evidence li::before {
+    content: '🔬';
+    position: absolute;
+    left: 0;
+    font-size: 0.8rem;
+  }
+
+  .approach-analysis {
+    margin-bottom: 20px;
+  }
+
+  .pros-cons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .pros h6,
+  .cons h6 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .pros ul,
+  .cons ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .pros li,
+  .cons li {
+    font-size: 0.85rem;
+    line-height: 1.4;
+    padding: 3px 0;
+    color: #4b5563;
+  }
+
+  .approach-footer {
+    border-top: 1px solid #e5e7eb;
+    padding-top: 16px;
+  }
+
+  .best-for {
+    font-size: 0.9rem;
+    color: #374151;
+    margin-bottom: 12px;
+  }
+
+  .approach-sources details {
+    font-size: 0.85rem;
+  }
+
+  .approach-sources summary {
+    color: #3b82f6;
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+  .sources-list {
+    list-style: none;
+    padding: 8px 0 0 16px;
+    margin: 0;
+  }
+
+  .sources-list li {
+    color: #6b7280;
+    font-size: 0.8rem;
+    padding: 2px 0;
+  }
+
+  .recommended-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  }
+
+  .comparison-tools {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 32px;
+    margin-bottom: 32px;
+    padding: 20px;
+    background: rgba(249, 250, 251, 0.6);
+    border-radius: 12px;
+  }
+
+  .filter-controls h5,
+  .sort-controls h5 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #374151;
+    margin: 0 0 8px 0;
+  }
+
+  .filter-buttons {
+    display: flex;
+    gap: 8px;
+  }
+
+  .filter-btn {
+    padding: 8px 16px;
+    border: 1px solid #d1d5db;
+    background: white;
+    color: #6b7280;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .filter-btn:hover,
+  .filter-btn--active {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+  }
+
+  .sort-select {
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: white;
+    color: #374151;
+    font-size: 0.85rem;
+  }
+
+  .comparison-notes {
+    background: linear-gradient(135deg, 
+      rgba(16, 185, 129, 0.05) 0%, 
+      rgba(59, 130, 246, 0.05) 100%);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: 12px;
+    padding: 20px;
+  }
+
+  .comparison-notes h5 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 12px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .comparison-notes ul {
+    margin: 0;
+    padding-left: 20px;
+  }
+
+  .comparison-notes li {
+    color: #4b5563;
+    line-height: 1.6;
+    margin: 8px 0;
+  }
+
+  /* Mobile Responsiveness */
+  @media (max-width: 768px) {
+    .approach-comparison {
+      padding: 20px;
+    }
+
+    .comparison-grid {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .approach-card {
+      padding: 20px;
+    }
+
+    .approach-header {
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .approach-indicators {
+      align-items: flex-start;
+      flex-direction: row;
+      justify-content: flex-start;
+    }
+
+    .pros-cons {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .comparison-tools {
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .filter-buttons {
+      flex-wrap: wrap;
+    }
+
+    .recommendation-banner {
+      flex-direction: column;
+      text-align: center;
+    }
+  }
+</style>
+
+<script>
+  // Add interactivity for filtering and sorting
+  document.addEventListener('DOMContentLoaded', function() {
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const approachCards = document.querySelectorAll('.approach-card');
+    const sortSelect = document.querySelector('.sort-select');
+
+    // Filter functionality
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', function() {
+        // Update active state
+        filterButtons.forEach(b => b.classList.remove('filter-btn--active'));
+        this.classList.add('filter-btn--active');
+
+        const filter = this.dataset.filter;
+        
+        approachCards.forEach(card => {
+          const difficulty = card.querySelector('.difficulty-indicator')?.textContent?.split(' ')[1];
+          
+          if (filter === 'all' || difficulty === filter) {
+            card.style.display = 'block';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    });
+
+    // Sort functionality (basic implementation)
+    if (sortSelect) {
+      sortSelect.addEventListener('change', function() {
+        const grid = document.querySelector('.comparison-grid');
+        const cards = Array.from(grid.children);
+        
+        cards.sort((a, b) => {
+          const getValue = (card, criteria) => {
+            switch(criteria) {
+              case 'strength':
+                const strength = card.querySelector('.strength-indicator')?.textContent;
+                return { 'HIGH': 3, 'MEDIUM': 2, 'LOW': 1 }[strength] || 0;
+              case 'difficulty':
+                const diff = card.querySelector('.difficulty-indicator')?.textContent?.split(' ')[1];
+                return { 'beginner': 1, 'intermediate': 2, 'advanced': 3 }[diff] || 0;
+              case 'name':
+                return card.querySelector('.approach-name')?.textContent || '';
+              default:
+                return 0;
+            }
+          };
+
+          const aVal = getValue(a, this.value);
+          const bVal = getValue(b, this.value);
+          
+          if (this.value === 'name') {
+            return aVal.localeCompare(bVal);
+          }
+          return bVal - aVal; // Descending order
+        });
+
+        cards.forEach(card => grid.appendChild(card));
+      });
+    }
+  });
+</script>

@@ -1,0 +1,465 @@
+---
+export interface Props {
+  type?: 'header' | 'inline' | 'section' | 'hero';
+  concept?: string;
+  scienceElement?: string;
+  faithElement?: string;
+  size?: 'small' | 'medium' | 'large';
+}
+
+const { 
+  type = 'inline', 
+  concept, 
+  scienceElement, 
+  faithElement, 
+  size = 'medium' 
+} = Astro.props;
+
+const bridgeAnimations = [
+  '🔬 ↔️ ✝️', '🧬 ↔️ 📖', '⚛️ ↔️ 🕊️', 
+  '🌌 ↔️ 🙏', '🔭 ↔️ ⛪', '📊 ↔️ 💒'
+];
+
+const concepts = {
+  'fine-tuning': {
+    science: '🌌 Cosmological Constants',
+    faith: '✝️ Divine Design',
+    description: 'Precise universal constants point to intentional creation'
+  },
+  'dna-information': {
+    science: '🧬 DNA Information Systems',
+    faith: '📜 Divine Code',
+    description: 'Complex genetic information suggests intelligent programming'
+  },
+  'consciousness': {
+    science: '🧠 Neural Complexity',
+    faith: '👤 Soul & Spirit',
+    description: 'Consciousness transcends mere material processes'
+  },
+  'origin-life': {
+    science: '⚗️ Biochemical Complexity',
+    faith: '🌱 Divine Breath',
+    description: 'Life\'s emergence defies random chance calculations'
+  },
+  'mathematics': {
+    science: '📐 Mathematical Elegance',
+    faith: '🎼 Divine Language',
+    description: 'The universe\'s mathematical beauty suggests a Mind behind reality'
+  }
+};
+
+const selectedConcept = concept && concepts[concept] ? concepts[concept] : null;
+---
+
+<div class={`science-faith-bridge science-faith-bridge--${type} science-faith-bridge--${size}`}>
+  {type === 'hero' && (
+    <div class="bridge-hero">
+      <div class="bridge-hero__animation">
+        <div class="bridge-element bridge-element--science">
+          <span class="bridge-icon">🔬</span>
+          <span class="bridge-label">Science</span>
+        </div>
+        <div class="bridge-connection">
+          <div class="bridge-line"></div>
+          <div class="bridge-pulse"></div>
+          <div class="bridge-symbol">⚡</div>
+        </div>
+        <div class="bridge-element bridge-element--faith">
+          <span class="bridge-icon">✝️</span>
+          <span class="bridge-label">Faith</span>
+        </div>
+      </div>
+      <h2 class="bridge-hero__title">Where Evidence Meets Truth</h2>
+      <p class="bridge-hero__subtitle">Exploring the beautiful harmony between scientific discovery and biblical faith</p>
+    </div>
+  )}
+
+  {type === 'section' && selectedConcept && (
+    <div class="bridge-section">
+      <div class="bridge-concept">
+        <h3 class="bridge-concept__title">{selectedConcept.description}</h3>
+        <div class="bridge-comparison">
+          <div class="bridge-side bridge-side--science">
+            <div class="bridge-side__icon">{selectedConcept.science.split(' ')[0]}</div>
+            <div class="bridge-side__content">
+              <h4>{selectedConcept.science.substring(2)}</h4>
+              <div class="bridge-side__indicator">Scientific Evidence</div>
+            </div>
+          </div>
+          <div class="bridge-center">
+            <div class="bridge-center__line"></div>
+            <div class="bridge-center__symbol">🤝</div>
+          </div>
+          <div class="bridge-side bridge-side--faith">
+            <div class="bridge-side__icon">{selectedConcept.faith.split(' ')[0]}</div>
+            <div class="bridge-side__content">
+              <h4>{selectedConcept.faith.substring(2)}</h4>
+              <div class="bridge-side__indicator">Biblical Truth</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )}
+
+  {type === 'inline' && (
+    <div class="bridge-inline">
+      <span class="bridge-science">{scienceElement || '🔬 Science'}</span>
+      <span class="bridge-connector">↔️</span>
+      <span class="bridge-faith">{faithElement || '✝️ Faith'}</span>
+    </div>
+  )}
+
+  {type === 'header' && (
+    <div class="bridge-header">
+      <div class="bridge-pattern"></div>
+      <div class="bridge-content">
+        <span class="bridge-tagline">Science + Faith = Truth</span>
+      </div>
+    </div>
+  )}
+</div>
+
+<style>
+  .science-faith-bridge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0;
+  }
+
+  /* Hero Section */
+  .bridge-hero {
+    text-align: center;
+    padding: 60px 20px;
+    background: linear-gradient(135deg, 
+      rgba(59, 130, 246, 0.1) 0%, 
+      rgba(139, 92, 246, 0.1) 50%,
+      rgba(16, 185, 129, 0.1) 100%);
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .bridge-hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(
+      circle at 30% 30%,
+      rgba(59, 130, 246, 0.1) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 70% 70%,
+      rgba(139, 92, 246, 0.1) 0%,
+      transparent 50%
+    );
+    animation: bridgeRotate 20s linear infinite;
+  }
+
+  @keyframes bridgeRotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .bridge-hero__animation {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    margin-bottom: 30px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .bridge-element {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+  }
+
+  .bridge-element--science {
+    border: 2px solid rgba(59, 130, 246, 0.3);
+  }
+
+  .bridge-element--faith {
+    border: 2px solid rgba(139, 92, 246, 0.3);
+  }
+
+  .bridge-icon {
+    font-size: 2.5rem;
+    display: block;
+  }
+
+  .bridge-label {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #1f2937;
+  }
+
+  .bridge-connection {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .bridge-line {
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%);
+    position: relative;
+  }
+
+  .bridge-pulse {
+    position: absolute;
+    top: -1px;
+    left: 0;
+    width: 4px;
+    height: 4px;
+    background: #10b981;
+    border-radius: 50%;
+    animation: bridgePulse 2s ease-in-out infinite;
+  }
+
+  @keyframes bridgePulse {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(56px); }
+  }
+
+  .bridge-symbol {
+    position: absolute;
+    font-size: 1.2rem;
+    animation: bridgeGlow 2s ease-in-out infinite;
+  }
+
+  @keyframes bridgeGlow {
+    0%, 100% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.2); opacity: 1; }
+  }
+
+  .bridge-hero__title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin: 0 0 16px 0;
+    background: linear-gradient(135deg, #1e40af 0%, #7c3aed 50%, #059669 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    position: relative;
+    z-index: 1;
+  }
+
+  .bridge-hero__subtitle {
+    font-size: 1.2rem;
+    color: #6b7280;
+    margin: 0;
+    line-height: 1.6;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Section Bridge */
+  .bridge-section {
+    width: 100%;
+    padding: 40px 0;
+  }
+
+  .bridge-concept__title {
+    text-align: center;
+    font-size: 1.4rem;
+    color: #1f2937;
+    margin: 0 0 30px 0;
+    font-weight: 600;
+  }
+
+  .bridge-comparison {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 20px;
+    align-items: center;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .bridge-side {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .bridge-side--science {
+    border-left: 4px solid #3b82f6;
+  }
+
+  .bridge-side--faith {
+    border-left: 4px solid #8b5cf6;
+  }
+
+  .bridge-side__icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+  }
+
+  .bridge-side__content h4 {
+    margin: 0 0 4px 0;
+    font-size: 1.1rem;
+    color: #1f2937;
+  }
+
+  .bridge-side__indicator {
+    font-size: 0.8rem;
+    color: #6b7280;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .bridge-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .bridge-center__line {
+    width: 40px;
+    height: 2px;
+    background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%);
+  }
+
+  .bridge-center__symbol {
+    position: absolute;
+    font-size: 1.5rem;
+    background: white;
+    padding: 4px;
+    border-radius: 50%;
+  }
+
+  /* Inline Bridge */
+  .bridge-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, 
+      rgba(59, 130, 246, 0.1) 0%, 
+      rgba(139, 92, 246, 0.1) 100%);
+    border-radius: 20px;
+    font-weight: 500;
+  }
+
+  .bridge-connector {
+    font-size: 1.2rem;
+    animation: bridgeConnector 2s ease-in-out infinite;
+  }
+
+  @keyframes bridgeConnector {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+
+  /* Header Bridge */
+  .bridge-header {
+    width: 100%;
+    height: 60px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, 
+      rgba(59, 130, 246, 0.1) 0%, 
+      rgba(139, 92, 246, 0.1) 100%);
+    border-radius: 8px;
+  }
+
+  .bridge-pattern {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+      radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.2) 0%, transparent 50%),
+      radial-gradient(circle at 75% 75%, rgba(139, 92, 246, 0.2) 0%, transparent 50%);
+    animation: bridgePattern 4s ease-in-out infinite;
+  }
+
+  @keyframes bridgePattern {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 0.8; }
+  }
+
+  .bridge-tagline {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #1f2937;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .bridge-hero {
+      padding: 40px 16px;
+    }
+
+    .bridge-hero__animation {
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .bridge-connection {
+      transform: rotate(90deg);
+    }
+
+    .bridge-hero__title {
+      font-size: 2rem;
+    }
+
+    .bridge-comparison {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto auto auto;
+      gap: 16px;
+    }
+
+    .bridge-center {
+      order: 2;
+    }
+
+    .bridge-center__line {
+      height: 40px;
+      width: 2px;
+    }
+
+    .bridge-side {
+      flex-direction: column;
+      text-align: center;
+    }
+  }
+
+  /* Size variations */
+  .science-faith-bridge--small .bridge-inline {
+    padding: 4px 12px;
+    font-size: 0.9rem;
+  }
+
+  .science-faith-bridge--large .bridge-inline {
+    padding: 12px 24px;
+    font-size: 1.2rem;
+  }
+</style>
