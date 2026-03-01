@@ -1,0 +1,288 @@
+---
+// FAQ Page - Essential questions that address real roadblocks
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>FAQ - NexusFaith | Honest Questions, Clear Answers</title>
+		<meta name="description" content="Get clear, evidence-based answers to the most common questions about science, faith, evolution, miracles, and fine-tuning.">
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+			
+			body {
+				font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+				line-height: 1.6;
+				color: #333;
+				background: #f7fafc;
+				min-height: 100vh;
+			}
+			
+			.container {
+				max-width: 800px;
+				margin: 0 auto;
+				padding: 0 20px;
+			}
+			
+			header {
+				background: white;
+				box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+				position: sticky;
+				top: 0;
+				z-index: 100;
+			}
+			
+			nav {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				padding: 1rem 0;
+			}
+			
+			.logo {
+				font-size: 1.5rem;
+				font-weight: 700;
+				color: #4a5568;
+				text-decoration: none;
+			}
+			
+			.nav-links {
+				display: flex;
+				list-style: none;
+				gap: 2rem;
+			}
+			
+			.nav-links a {
+				color: #4a5568;
+				text-decoration: none;
+				font-weight: 500;
+				transition: color 0.3s;
+			}
+			
+			.nav-links a:hover {
+				color: #667eea;
+			}
+			
+			.hero {
+				background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+				color: white;
+				padding: 3rem 0;
+				text-align: center;
+			}
+			
+			.hero h1 {
+				font-size: 2.5rem;
+				font-weight: 700;
+				margin-bottom: 1rem;
+			}
+			
+			.hero p {
+				font-size: 1.1rem;
+				opacity: 0.9;
+			}
+			
+			.faq-content {
+				padding: 3rem 0;
+			}
+			
+			.faq-container {
+				background: white;
+				border-radius: 15px;
+				padding: 3rem;
+				box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+			}
+			
+			.faq-item {
+				border-bottom: 1px solid #e2e8f0;
+				padding: 2rem 0;
+			}
+			
+			.faq-item:last-child {
+				border-bottom: none;
+			}
+			
+			.faq-question {
+				font-size: 1.25rem;
+				font-weight: 600;
+				color: #2d3748;
+				margin-bottom: 1rem;
+				cursor: pointer;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+			}
+			
+			.faq-question:hover {
+				color: #667eea;
+			}
+			
+			.faq-answer {
+				color: #4a5568;
+				line-height: 1.7;
+				display: none;
+				padding-left: 1rem;
+				border-left: 3px solid #667eea;
+			}
+			
+			.faq-answer.active {
+				display: block;
+			}
+			
+			.expand-icon {
+				font-size: 1.5rem;
+				transition: transform 0.3s;
+			}
+			
+			.expand-icon.active {
+				transform: rotate(45deg);
+			}
+			
+			@media (max-width: 768px) {
+				.nav-links {
+					display: none;
+				}
+				
+				.hero h1 {
+					font-size: 2rem;
+				}
+				
+				.faq-container {
+					padding: 2rem;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<nav class="container">
+				<a href="/" class="logo">✝️ NexusFaith</a>
+				<ul class="nav-links">
+					<li><a href="/">Home</a></li>
+					<li><a href="/faith-answers">Faith Answers</a></li>
+					<li><a href="/faq" style="color: #667eea;">FAQ</a></li>
+					<li><a href="/about">About</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<section class="hero">
+			<div class="container">
+				<h1>Frequently Asked Questions</h1>
+				<p>Honest questions deserve clear, charitable answers</p>
+			</div>
+		</section>
+
+		<main class="faq-content">
+			<div class="container">
+				<div class="faq-container">
+					<div class="faq-item">
+						<div class="faq-question" onclick="toggleFAQ(0)">
+							<span>Isn't faith just believing without evidence?</span>
+							<span class="expand-icon">+</span>
+						</div>
+						<div class="faq-answer" id="faq-0">
+							<p>In the Bible, faith is trust based on testimony, experience, and reasons. It's not a refusal to think; it's a commitment to seek truth. True biblical faith examines evidence and builds on solid foundations.</p>
+							<p>Think of faith like trusting a bridge engineer's calculations - you examine their credentials, track record, and the bridge's construction before crossing. Similarly, Christian faith evaluates historical evidence, philosophical arguments, and personal experience.</p>
+							<p><strong>Blind faith is not the biblical model.</strong> The apostle Paul appealed to evidence. Jesus pointed to his works. Faith and reason work together, not against each other.</p>
+						</div>
+					</div>
+
+					<div class="faq-item">
+						<div class="faq-question" onclick="toggleFAQ(1)">
+							<span>What about Galileo? Wasn't that science vs. religion?</span>
+							<span class="expand-icon">+</span>
+						</div>
+						<div class="faq-answer" id="faq-1">
+							<p>The Galileo affair was complex, involving politics, personality conflicts, and competing interpretations of both science and Scripture - not simply "Science vs. Religion."</p>
+							<p><strong>The fuller context:</strong> Many church leaders supported Galileo initially. The conflict arose when he moved from presenting heliocentrism as a useful model to insisting it was absolute truth, while also mocking the Pope in his writings.</p>
+							<p>The broader historical picture shows centuries of church support for learning, with many devout scientists making groundbreaking discoveries. The "warfare thesis" between science and religion is largely a 19th-century myth.</p>
+							<p><strong>Lesson:</strong> Both scientific theories and biblical interpretation can be refined through careful study. Humility serves both faith and science well.</p>
+						</div>
+					</div>
+
+					<div class="faq-item">
+						<div class="faq-question" onclick="toggleFAQ(2)">
+							<span>Can I accept evolution and follow the Bible?</span>
+							<span class="expand-icon">+</span>
+						</div>
+						<div class="faq-answer" id="faq-2">
+							<p>Many thoughtful Christians believe God could use evolutionary processes as a means of creation. The core theological claim is that <strong>God is the Author</strong>, regardless of the specific mechanism.</p>
+							<p><strong>Key distinction:</strong> The Bible tells us <em>that</em> God created; science helps us understand <em>how</em> God created. Genesis emphasizes God's role, purpose, and relationship with creation - not necessarily the timeline or biological mechanisms.</p>
+							<p>Christian scientists like Francis Collins (Human Genome Project director) and John Polkinghorne (particle physicist) see evolution as God's elegant method of creation, requiring incredible fine-tuning to work at all.</p>
+							<p><strong>The real question:</strong> Is the universe the result of intelligent design or pure chance? The mathematical precision required for life suggests purposeful creation, however it unfolded.</p>
+						</div>
+					</div>
+
+					<div class="faq-item">
+						<div class="faq-question" onclick="toggleFAQ(3)">
+							<span>Doesn't entropy rule out order and complexity?</span>
+							<span class="expand-icon">+</span>
+						</div>
+						<div class="faq-answer" id="faq-3">
+							<p>Entropy applies to <strong>closed systems</strong>. Earth is an open system receiving massive energy input from the sun, allowing local decreases in entropy (increased order) while the overall universal entropy increases.</p>
+							<p><strong>However,</strong> the deeper question is about the universe's initial conditions. Our cosmos began with remarkably <strong>low entropy</strong> - incredible order that made all subsequent structure possible.</p>
+							<p>This initial fine-tuning is what cosmologists find most remarkable: the universe started with just the right amount of order to allow stars, planets, chemistry, and life to emerge over time.</p>
+							<p><strong>Bottom line:</strong> Entropy doesn't prevent complexity on Earth, but the universe's low initial entropy points to purposeful design at the very beginning.</p>
+						</div>
+					</div>
+
+					<div class="faq-item">
+						<div class="faq-question" onclick="toggleFAQ(4)">
+							<span>Are miracles anti-science?</span>
+							<span class="expand-icon">+</span>
+						</div>
+						<div class="faq-answer" id="faq-4">
+							<p>Science describes the <strong>normal patterns</strong> of nature - the reliable laws that make scientific investigation possible. Miracles are claimed as <strong>exceptional events</strong> where God acts within the story He authored.</p>
+							<p><strong>Think of it this way:</strong> If you're reading a book and the author decides to intervene in the plot, that doesn't mean the author is "anti-grammar" or "anti-storytelling rules." The author simply has the freedom to act within their own creation.</p>
+							<p>Many scientists who believe in miracles see no contradiction: God normally works through natural laws (which He sustains), but retains the freedom to act directly when necessary for His purposes.</p>
+							<p><strong>Key insight:</strong> Science studies <em>how</em> things normally work. It can't dictate what the Creator of those laws can or cannot do within His own creation.</p>
+						</div>
+					</div>
+
+					<div class="faq-item">
+						<div class="faq-question" onclick="toggleFAQ(5)">
+							<span>Is fine-tuning real or just hype?</span>
+							<span class="expand-icon">+</span>
+						</div>
+						<div class="faq-answer" id="faq-5">
+							<p>Fine-tuning is <strong>widely accepted</strong> by physicists across the philosophical spectrum. The constants of nature are balanced on a razor's edge - tiny changes would make stars, chemistry, or life impossible.</p>
+							<p><strong>The evidence:</strong></p>
+							<ul style="margin: 1rem 0; padding-left: 2rem;">
+								<li>Strong nuclear force 2% different → no chemistry</li>
+								<li>Cosmological constant off by 1 in 10^120 → universe collapses or expands too fast</li>
+								<li>Gravitational constant slightly different → no stars or stellar burning</li>
+							</ul>
+							<p><strong>The debate isn't about <em>whether</em> fine-tuning exists</strong> - it's about <em>why</em>: pure chance, multiverse theories, or intelligent design.</p>
+							<p>Even skeptics like Martin Rees acknowledge the "remarkable fine-tuning." The mathematical precision is undeniable - the question is what it means.</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main>
+
+		<script>
+			function toggleFAQ(index) {
+				const answer = document.getElementById(`faq-${index}`);
+				const icon = document.querySelectorAll('.expand-icon')[index];
+				
+				// Close all other FAQs
+				document.querySelectorAll('.faq-answer').forEach((item, i) => {
+					if (i !== index) {
+						item.classList.remove('active');
+						document.querySelectorAll('.expand-icon')[i].classList.remove('active');
+					}
+				});
+				
+				// Toggle current FAQ
+				answer.classList.toggle('active');
+				icon.classList.toggle('active');
+			}
+		</script>
+	</body>
+</html>
