@@ -1,0 +1,487 @@
+---
+// WCAG 2.1 Accessibility Enhancements for NexusFaith
+// Ensures broader reach for faith-seeking individuals with disabilities
+---
+
+<!-- Skip Links for keyboard navigation -->
+<div class="skip-links">
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <a href="#navigation" class="skip-link">Skip to navigation</a>
+  <a href="#search" class="skip-link">Skip to search</a>
+</div>
+
+<!-- Screen reader announcements -->
+<div id="sr-announcements" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+<!-- Focus indicator -->
+<div id="focus-indicator" class="focus-indicator"></div>
+
+<style>
+  /* Skip Links - WCAG 2.1 Level A requirement */
+  .skip-links {
+    position: absolute;
+    top: -100px;
+    left: 0;
+    z-index: 10000;
+  }
+  
+  .skip-link {
+    position: absolute;
+    padding: 8px 16px;
+    background: #000;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    border-radius: 0 0 4px 0;
+    transition: top 0.3s;
+    font-size: 14px;
+  }
+  
+  .skip-link:focus {
+    top: 0;
+    outline: 3px solid #4299e1;
+    outline-offset: 2px;
+  }
+  
+  /* Screen reader only content */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  
+  /* Enhanced focus indicators for better visibility */
+  *:focus {
+    outline: 3px solid #4299e1;
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  
+  /* Custom focus indicator for complex elements */
+  .focus-indicator {
+    position: absolute;
+    pointer-events: none;
+    border: 3px solid #4299e1;
+    border-radius: 4px;
+    opacity: 0;
+    transition: all 0.2s ease;
+    z-index: 9999;
+  }
+  
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    :root {
+      --text-color: #000000;
+      --background-color: #ffffff;
+      --link-color: #0000ff;
+      --border-color: #000000;
+    }
+    
+    * {
+      border-color: var(--border-color) !important;
+    }
+    
+    a {
+      color: var(--link-color) !important;
+      text-decoration: underline !important;
+    }
+    
+    button {
+      border: 2px solid var(--border-color) !important;
+    }
+  }
+  
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+  
+  /* Dark mode accessibility improvements */
+  @media (prefers-color-scheme: dark) {
+    .skip-link {
+      background: #ffffff;
+      color: #000000;
+    }
+    
+    .skip-link:focus {
+      outline-color: #60a5fa;
+    }
+    
+    *:focus {
+      outline-color: #60a5fa;
+    }
+    
+    .focus-indicator {
+      border-color: #60a5fa;
+    }
+  }
+  
+  /* Enhanced tap targets for mobile - minimum 44px */
+  @media (max-width: 768px) {
+    button,
+    a,
+    input[type="button"],
+    input[type="submit"],
+    .clickable {
+      min-height: 44px;
+      min-width: 44px;
+      padding: 12px;
+    }
+  }
+  
+  /* Better text scaling support */
+  @media (min-resolution: 2dppx) {
+    body {
+      font-size: 18px; /* Larger base for high DPI */
+    }
+  }
+  
+  /* Color blind friendly colors */
+  .success { background: #059669; color: white; }
+  .warning { background: #d97706; color: white; }
+  .error { background: #dc2626; color: white; }
+  .info { background: #2563eb; color: white; }
+</style>
+
+<script>
+  class AccessibilityManager {
+    constructor() {
+      this.init();
+    }
+    
+    init() {
+      this.setupFocusManagement();
+      this.setupKeyboardNavigation();
+      this.setupScreenReaderSupport();
+      this.setupColorBlindSupport();
+      this.monitorAccessibility();
+    }
+    
+    setupFocusManagement() {
+      let focusedElement = null;
+      
+      // Track focus for better UX
+      document.addEventListener('focusin', (e) => {
+        focusedElement = e.target;
+        this.updateFocusIndicator(e.target);
+      });
+      
+      document.addEventListener('focusout', () => {
+        this.hideFocusIndicator();
+      });
+      
+      // Handle modal/dialog focus trapping
+      this.setupFocusTrap();
+    }
+    
+    setupFocusTrap() {
+      const modals = document.querySelectorAll('[role="dialog"]');
+      modals.forEach(modal => {
+        const focusableElements = modal.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        
+        if (focusableElements.length === 0) return;
+        
+        const firstFocusable = focusableElements[0];
+        const lastFocusable = focusableElements[focusableElements.length - 1];
+        
+        modal.addEventListener('keydown', (e) => {
+          if (e.key === 'Tab') {
+            if (e.shiftKey) {
+              if (document.activeElement === firstFocusable) {
+                e.preventDefault();
+                lastFocusable.focus();
+              }
+            } else {
+              if (document.activeElement === lastFocusable) {
+                e.preventDefault();
+                firstFocusable.focus();
+              }
+            }
+          }
+        });
+      });
+    }
+    
+    updateFocusIndicator(element) {
+      const indicator = document.getElementById('focus-indicator');
+      if (!indicator) return;
+      
+      const rect = element.getBoundingClientRect();
+      indicator.style.left = rect.left - 2 + 'px';
+      indicator.style.top = rect.top - 2 + 'px';
+      indicator.style.width = rect.width + 4 + 'px';
+      indicator.style.height = rect.height + 4 + 'px';
+      indicator.style.opacity = '1';
+    }
+    
+    hideFocusIndicator() {
+      const indicator = document.getElementById('focus-indicator');
+      if (indicator) {
+        indicator.style.opacity = '0';
+      }
+    }
+    
+    setupKeyboardNavigation() {
+      // Handle Escape key for modals/dropdowns
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          const activeModal = document.querySelector('[role="dialog"][aria-hidden="false"]');
+          if (activeModal) {
+            this.closeModal(activeModal);
+          }
+          
+          const activeDropdown = document.querySelector('[aria-expanded="true"]');
+          if (activeDropdown) {
+            this.closeDropdown(activeDropdown);
+          }
+        }
+      });
+      
+      // Arrow key navigation for menus
+      this.setupArrowKeyNavigation();
+    }
+    
+    setupArrowKeyNavigation() {
+      const menus = document.querySelectorAll('[role="menu"], [role="menubar"]');
+      menus.forEach(menu => {
+        const items = menu.querySelectorAll('[role="menuitem"]');
+        
+        menu.addEventListener('keydown', (e) => {
+          const currentIndex = Array.from(items).indexOf(document.activeElement);
+          let nextIndex;
+          
+          switch (e.key) {
+            case 'ArrowDown':
+              e.preventDefault();
+              nextIndex = (currentIndex + 1) % items.length;
+              items[nextIndex].focus();
+              break;
+            case 'ArrowUp':
+              e.preventDefault();
+              nextIndex = (currentIndex - 1 + items.length) % items.length;
+              items[nextIndex].focus();
+              break;
+            case 'Home':
+              e.preventDefault();
+              items[0].focus();
+              break;
+            case 'End':
+              e.preventDefault();
+              items[items.length - 1].focus();
+              break;
+          }
+        });
+      });
+    }
+    
+    setupScreenReaderSupport() {
+      this.announcer = document.getElementById('sr-announcements');
+      
+      // Announce page changes
+      this.announcePageChange();
+      
+      // Announce dynamic content changes
+      this.setupLiveRegions();
+    }
+    
+    announce(message, priority = 'polite') {
+      if (!this.announcer) return;
+      
+      this.announcer.setAttribute('aria-live', priority);
+      this.announcer.textContent = message;
+      
+      // Clear after announcement to allow repeat announcements
+      setTimeout(() => {
+        this.announcer.textContent = '';
+      }, 1000);
+    }
+    
+    announcePageChange() {
+      const title = document.title;
+      const mainHeading = document.querySelector('h1')?.textContent || title;
+      
+      setTimeout(() => {
+        this.announce(`Page loaded: ${mainHeading}. Use Tab to navigate, or press H to jump between headings.`);
+      }, 1000);
+    }
+    
+    setupLiveRegions() {
+      // Monitor search results
+      const searchResults = document.querySelector('#search-results');
+      if (searchResults) {
+        const observer = new MutationObserver((mutations) => {
+          const resultCount = searchResults.querySelectorAll('.result-item').length;
+          if (resultCount > 0) {
+            this.announce(`${resultCount} search results found`);
+          } else {
+            this.announce('No search results found');
+          }
+        });
+        
+        observer.observe(searchResults, { childList: true });
+      }
+    }
+    
+    setupColorBlindSupport() {
+      // Add icons/patterns to color-coded elements
+      const colorElements = document.querySelectorAll('.success, .warning, .error, .info');
+      colorElements.forEach(element => {
+        const className = Array.from(element.classList).find(cls => 
+          ['success', 'warning', 'error', 'info'].includes(cls)
+        );
+        
+        const icons = {
+          success: '✓',
+          warning: '⚠',
+          error: '✗',
+          info: 'ℹ'
+        };
+        
+        if (icons[className] && !element.querySelector('.status-icon')) {
+          const icon = document.createElement('span');
+          icon.className = 'status-icon';
+          icon.textContent = icons[className];
+          icon.setAttribute('aria-hidden', 'true');
+          element.insertBefore(icon, element.firstChild);
+        }
+      });
+    }
+    
+    monitorAccessibility() {
+      // Check for common accessibility issues
+      this.checkMissingAltText();
+      this.checkHeadingStructure();
+      this.checkFormLabels();
+      this.checkColorContrast();
+    }
+    
+    checkMissingAltText() {
+      const images = document.querySelectorAll('img:not([alt])');
+      if (images.length > 0) {
+        console.warn(`Found ${images.length} images without alt text:`, images);
+      }
+    }
+    
+    checkHeadingStructure() {
+      const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+      let previousLevel = 0;
+      let issues = [];
+      
+      headings.forEach(heading => {
+        const currentLevel = parseInt(heading.tagName[1]);
+        if (currentLevel - previousLevel > 1) {
+          issues.push(`Heading level skipped: ${heading.textContent}`);
+        }
+        previousLevel = currentLevel;
+      });
+      
+      if (issues.length > 0) {
+        console.warn('Heading structure issues:', issues);
+      }
+    }
+    
+    checkFormLabels() {
+      const inputs = document.querySelectorAll('input, select, textarea');
+      const unlabeled = [];
+      
+      inputs.forEach(input => {
+        if (input.type === 'hidden') return;
+        
+        const hasLabel = input.labels && input.labels.length > 0;
+        const hasAriaLabel = input.getAttribute('aria-label');
+        const hasAriaLabelledBy = input.getAttribute('aria-labelledby');
+        
+        if (!hasLabel && !hasAriaLabel && !hasAriaLabelledBy) {
+          unlabeled.push(input);
+        }
+      });
+      
+      if (unlabeled.length > 0) {
+        console.warn(`Found ${unlabeled.length} form controls without labels:`, unlabeled);
+      }
+    }
+    
+    checkColorContrast() {
+      // Basic color contrast check (simplified)
+      const elements = document.querySelectorAll('*');
+      const lowContrast = [];
+      
+      elements.forEach(element => {
+        const styles = getComputedStyle(element);
+        const color = styles.color;
+        const backgroundColor = styles.backgroundColor;
+        
+        // Simple heuristic - not a full contrast calculation
+        if (color && backgroundColor && 
+            color !== 'rgba(0, 0, 0, 0)' && 
+            backgroundColor !== 'rgba(0, 0, 0, 0)') {
+          
+          // Very basic check - in production, use a proper contrast ratio calculator
+          const colorLuminance = this.getLuminance(color);
+          const bgLuminance = this.getLuminance(backgroundColor);
+          const ratio = (Math.max(colorLuminance, bgLuminance) + 0.05) / 
+                       (Math.min(colorLuminance, bgLuminance) + 0.05);
+          
+          if (ratio < 4.5) { // WCAG AA standard
+            lowContrast.push({element, ratio: ratio.toFixed(2)});
+          }
+        }
+      });
+      
+      if (lowContrast.length > 0) {
+        console.warn('Potential color contrast issues:', lowContrast.slice(0, 5)); // Show first 5
+      }
+    }
+    
+    getLuminance(color) {
+      // Simplified luminance calculation
+      // In production, use a proper color contrast library
+      const rgb = color.match(/\d+/g);
+      if (!rgb) return 0;
+      
+      const [r, g, b] = rgb.map(c => {
+        c = c / 255;
+        return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+      });
+      
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    }
+    
+    // Public API
+    closeModal(modal) {
+      modal.setAttribute('aria-hidden', 'true');
+      const trigger = document.querySelector(`[aria-controls="${modal.id}"]`);
+      if (trigger) trigger.focus();
+    }
+    
+    closeDropdown(dropdown) {
+      dropdown.setAttribute('aria-expanded', 'false');
+    }
+  }
+  
+  // Initialize accessibility manager
+  if (typeof window !== 'undefined') {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        window.accessibilityManager = new AccessibilityManager();
+      });
+    } else {
+      window.accessibilityManager = new AccessibilityManager();
+    }
+  }
+</script>

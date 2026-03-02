@@ -1,0 +1,320 @@
+---
+// Performance monitoring and Core Web Vitals tracking
+---
+
+<script>
+  // Core Web Vitals monitoring for NexusFaith
+  // Tracks LCP, INP, CLS for performance optimization
+  
+  class PerformanceMonitor {
+    constructor() {
+      this.metrics = {};
+      this.init();
+    }
+    
+    init() {
+      // Load web-vitals library dynamically
+      this.loadWebVitals().then(() => {
+        this.setupCoreWebVitals();
+        this.setupCustomMetrics();
+        this.setupErrorTracking();
+      });
+    }
+    
+    async loadWebVitals() {
+      // Load web-vitals from CDN for Core Web Vitals measurement
+      if (typeof getCLS === 'undefined') {
+        await import('https://unpkg.com/web-vitals@3/dist/web-vitals.js');
+      }
+    }
+    
+    setupCoreWebVitals() {
+      // Track Largest Contentful Paint
+      getCLS((metric) => {
+        this.metrics.cls = metric;
+        this.reportMetric('CLS', metric.value, metric.rating);
+      });
+      
+      // Track First Input Delay -> Interaction to Next Paint
+      getINP((metric) => {
+        this.metrics.inp = metric;
+        this.reportMetric('INP', metric.value, metric.rating);
+      });
+      
+      // Track Largest Contentful Paint
+      getLCP((metric) => {
+        this.metrics.lcp = metric;
+        this.reportMetric('LCP', metric.value, metric.rating);
+      });
+      
+      // Track First Contentful Paint
+      getFCP((metric) => {
+        this.metrics.fcp = metric;
+        this.reportMetric('FCP', metric.value, metric.rating);
+      });
+      
+      // Track Time to First Byte
+      getTTFB((metric) => {
+        this.metrics.ttfb = metric;
+        this.reportMetric('TTFB', metric.value, metric.rating);
+      });
+    }
+    
+    setupCustomMetrics() {
+      // Track page load time
+      window.addEventListener('load', () => {
+        const loadTime = performance.now();
+        this.reportMetric('Load Time', loadTime, loadTime < 2000 ? 'good' : loadTime < 4000 ? 'needs-improvement' : 'poor');
+      });
+      
+      // Track time to interactive
+      this.measureTimeToInteractive();
+      
+      // Track resource loading
+      this.monitorResourceLoading();
+      
+      // Track JavaScript errors
+      this.setupErrorTracking();
+    }
+    
+    measureTimeToInteractive() {
+      // Simple TTI approximation
+      const observer = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          if (entry.entryType === 'measure' && entry.name === 'tti') {
+            this.reportMetric('TTI', entry.duration, entry.duration < 3800 ? 'good' : 'needs-improvement');
+          }
+        }
+      });
+      observer.observe({entryTypes: ['measure']});
+      
+      // Mark TTI when main thread is stable
+      setTimeout(() => {
+        performance.mark('tti-start');
+        requestIdleCallback(() => {
+          performance.mark('tti-end');
+          performance.measure('tti', 'tti-start', 'tti-end');
+        });
+      }, 100);
+    }
+    
+    monitorResourceLoading() {
+      const observer = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          if (entry.entryType === 'resource') {
+            // Track slow resources
+            if (entry.duration > 1000) {
+              this.reportMetric('Slow Resource', entry.duration, 'poor', {
+                url: entry.name,
+                type: entry.initiatorType
+              });
+            }
+          }
+        }
+      });
+      observer.observe({entryTypes: ['resource']});
+    }
+    
+    setupErrorTracking() {
+      // JavaScript errors
+      window.addEventListener('error', (event) => {
+        this.reportError('JavaScript Error', {
+          message: event.message,
+          filename: event.filename,
+          lineno: event.lineno,
+          colno: event.colno,
+          stack: event.error?.stack
+        });
+      });
+      
+      // Unhandled promise rejections
+      window.addEventListener('unhandledrejection', (event) => {
+        this.reportError('Unhandled Promise Rejection', {
+          reason: event.reason,
+          stack: event.reason?.stack
+        });
+      });
+      
+      // Resource loading errors
+      window.addEventListener('error', (event) => {
+        if (event.target !== window) {
+          this.reportError('Resource Loading Error', {
+            element: event.target.tagName,
+            source: event.target.src || event.target.href,
+            type: 'resource'
+          });
+        }
+      }, true);
+    }
+    
+    reportMetric(name, value, rating, extra = {}) {
+      const data = {
+        name,
+        value,
+        rating,
+        timestamp: Date.now(),
+        url: window.location.href,
+        userAgent: navigator.userAgent,
+        ...extra
+      };
+      
+      // Log to console in development
+      if (window.location.hostname === 'localhost') {
+        console.group(`📊 Performance Metric: ${name}`);
+        console.log('Value:', value);
+        console.log('Rating:', rating);
+        console.log('Data:', data);
+        console.groupEnd();
+      }
+      
+      // Send to analytics (replace with your analytics endpoint)
+      this.sendToAnalytics('performance', data);
+      
+      // Update performance badge if exists
+      this.updatePerformanceBadge(rating);
+    }
+    
+    reportError(type, details) {
+      const data = {
+        type,
+        details,
+        timestamp: Date.now(),
+        url: window.location.href,
+        userAgent: navigator.userAgent
+      };
+      
+      // Log to console
+      console.error(`🚨 ${type}:`, details);
+      
+      // Send to error tracking
+      this.sendToAnalytics('error', data);
+    }
+    
+    sendToAnalytics(type, data) {
+      // In production, send to your analytics service
+      // For now, store in localStorage for debugging
+      const key = `nexusfaith_${type}_${Date.now()}`;
+      try {
+        localStorage.setItem(key, JSON.stringify(data));
+        
+        // Keep only last 100 entries
+        const keys = Object.keys(localStorage).filter(k => k.startsWith('nexusfaith_'));
+        if (keys.length > 100) {
+          keys.sort().slice(0, keys.length - 100).forEach(k => {
+            localStorage.removeItem(k);
+          });
+        }
+      } catch (e) {
+        // Storage full or disabled
+        console.warn('Unable to store analytics data:', e);
+      }
+    }
+    
+    updatePerformanceBadge(rating) {
+      const badge = document.querySelector('.performance-badge');
+      if (!badge) return;
+      
+      const colors = {
+        good: '#10b981',
+        'needs-improvement': '#f59e0b',
+        poor: '#ef4444'
+      };
+      
+      badge.style.background = colors[rating] || '#6b7280';
+      badge.textContent = rating.charAt(0).toUpperCase() + rating.slice(1);
+    }
+    
+    // Public API for manual measurements
+    startMeasure(name) {
+      performance.mark(`${name}-start`);
+    }
+    
+    endMeasure(name) {
+      const endMark = `${name}-end`;
+      performance.mark(endMark);
+      performance.measure(name, `${name}-start`, endMark);
+      
+      const measure = performance.getEntriesByName(name)[0];
+      if (measure) {
+        this.reportMetric(`Custom: ${name}`, measure.duration, measure.duration < 100 ? 'good' : 'needs-improvement');
+      }
+    }
+    
+    // Export performance summary
+    getPerformanceSummary() {
+      return {
+        metrics: this.metrics,
+        timestamp: Date.now(),
+        url: window.location.href
+      };
+    }
+  }
+  
+  // Initialize performance monitoring
+  let performanceMonitor;
+  
+  if (typeof window !== 'undefined') {
+    // Initialize after DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        performanceMonitor = new PerformanceMonitor();
+      });
+    } else {
+      performanceMonitor = new PerformanceMonitor();
+    }
+    
+    // Make available globally for debugging
+    window.performanceMonitor = performanceMonitor;
+  }
+  
+  // Service Worker performance tracking
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.addEventListener('message', (event) => {
+      if (event.data.type === 'CACHE_HIT') {
+        performanceMonitor?.reportMetric('Cache Hit', 1, 'good', {
+          url: event.data.url
+        });
+      }
+    });
+  }
+</script>
+
+<!-- Performance badge (optional visual indicator) -->
+<div class="performance-badge" style="
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #6b7280;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  z-index: 1000;
+  opacity: 0.7;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  display: none;
+" id="perf-badge">
+  Measuring...
+</div>
+
+<style>
+  /* Show performance badge in development */
+  @media (max-width: 1px) {
+    /* This will never match, effectively hiding in production */
+    #perf-badge { display: block !important; }
+  }
+  
+  /* Development mode indicator */
+  body[data-dev="true"] #perf-badge {
+    display: block;
+  }
+</style>
+
+<script>
+  // Show badge in development
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    document.body.setAttribute('data-dev', 'true');
+  }
+</script>

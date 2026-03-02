@@ -1,5 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
+import PerformanceMonitor from '../components/PerformanceMonitor.astro';
+import AccessibilityEnhancements from '../components/AccessibilityEnhancements.astro';
 
 // Get featured content
 const questions = await getCollection('questions');
@@ -13,8 +15,53 @@ const featuredQuestions = questions.slice(0, 6); // Show first 6 for demo
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta name="generator" content={Astro.generator} />
+		
+		<!-- PWA Manifest -->
+		<link rel="manifest" href="/manifest.json" />
+		<meta name="theme-color" content="#667eea" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+		<meta name="apple-mobile-web-app-title" content="NexusFaith" />
+		
+		<!-- SEO and Social -->
 		<title>NexusFaith - Discover the Divine Code | Where Science Illuminates Scripture</title>
 		<meta name="description" content="Educated faith for science-minded believers. Get evidence-based answers to tough questions about faith, science, and Christianity.">
+		
+		<!-- Enhanced SEO -->
+		<meta property="og:title" content="NexusFaith - Where Science Illuminates Scripture" />
+		<meta property="og:description" content="Educated faith for science-minded believers. Get evidence-based answers to tough questions." />
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content="https://nexusfaith.com" />
+		<meta property="og:image" content="https://nexusfaith.com/og-image.png" />
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content="NexusFaith - Where Science Illuminates Scripture" />
+		<meta name="twitter:description" content="Educated faith for science-minded believers." />
+		
+		<!-- Structured Data -->
+		<script type="application/ld+json">
+		{
+			"@context": "https://schema.org",
+			"@type": "Organization",
+			"name": "NexusFaith",
+			"description": "Where Science Illuminates Scripture - Educated faith for science-minded believers",
+			"url": "https://nexusfaith.com",
+			"sameAs": ["https://youtube.com/@nexusfaith"],
+			"founder": {
+				"@type": "Person",
+				"name": "John Nguyen"
+			},
+			"mainEntity": {
+				"@type": "WebSite",
+				"name": "NexusFaith",
+				"url": "https://nexusfaith.com",
+				"potentialAction": {
+					"@type": "SearchAction",
+					"target": "https://nexusfaith.com/search?q={search_term_string}",
+					"query-input": "required name=search_term_string"
+				}
+			}
+		}
+		</script>
 		<style>
 			* {
 				margin: 0;
@@ -349,5 +396,24 @@ const featuredQuestions = questions.slice(0, 6); // Show first 6 for demo
 				<p>&copy; 2026 NexusFaith. Educated faith, not blind faith. ✝️🔬</p>
 			</div>
 		</footer>
+
+		<!-- Enhanced Performance & Accessibility -->
+		<PerformanceMonitor />
+		<AccessibilityEnhancements />
+		
+		<!-- Service Worker Registration -->
+		<script>
+			if ('serviceWorker' in navigator) {
+				window.addEventListener('load', () => {
+					navigator.serviceWorker.register('/sw.js')
+						.then(registration => {
+							console.log('Service Worker registered successfully');
+						})
+						.catch(error => {
+							console.log('Service Worker registration failed:', error);
+						});
+				});
+			}
+		</script>
 	</body>
 </html>

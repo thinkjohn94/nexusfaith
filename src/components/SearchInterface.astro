@@ -1,0 +1,376 @@
+---
+// Enhanced Search Interface with performance optimizations
+---
+
+<div class="search-container">
+  <div class="search-box">
+    <input 
+      type="text" 
+      id="search-input" 
+      placeholder="Search apologetics questions, evidence, or topics..." 
+      aria-label="Search NexusFaith content"
+      autocomplete="off"
+    />
+    <button id="search-btn" aria-label="Search">
+      <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M21.71 20.29L18 16.61A9 9 0 1 0 16.61 18l3.68 3.68a1 1 0 0 0 1.42-1.42zM11 18a7 7 0 1 1 7-7 7 7 0 0 1-7 7z"/>
+      </svg>
+    </button>
+  </div>
+  
+  <div id="search-filters" class="search-filters">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="science">Science</button>
+    <button class="filter-btn" data-filter="faith">Faith</button>
+    <button class="filter-btn" data-filter="apologetics">Apologetics</button>
+    <button class="filter-btn" data-filter="philosophy">Philosophy</button>
+  </div>
+  
+  <div id="search-results" class="search-results" role="region" aria-live="polite" aria-label="Search results">
+    <!-- Results dynamically inserted here -->
+  </div>
+</div>
+
+<style>
+  .search-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+  
+  .search-box {
+    display: flex;
+    position: relative;
+    margin-bottom: 1rem;
+  }
+  
+  #search-input {
+    width: 100%;
+    padding: 0.75rem 3rem 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: white;
+  }
+  
+  #search-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+  
+  #search-btn {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 4px;
+    transition: color 0.2s;
+  }
+  
+  #search-btn:hover {
+    color: #3b82f6;
+  }
+  
+  .search-filters {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    overflow-x: auto;
+  }
+  
+  .filter-btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid #d1d5db;
+    background: white;
+    border-radius: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+    font-size: 0.875rem;
+  }
+  
+  .filter-btn:hover {
+    background: #f3f4f6;
+  }
+  
+  .filter-btn.active {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+  }
+  
+  .search-results {
+    min-height: 200px;
+  }
+  
+  .result-item {
+    padding: 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    background: white;
+    transition: all 0.2s ease;
+  }
+  
+  .result-item:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  
+  .result-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+  }
+  
+  .result-snippet {
+    color: #6b7280;
+    line-height: 1.5;
+    margin-bottom: 0.75rem;
+  }
+  
+  .result-meta {
+    display: flex;
+    gap: 0.75rem;
+    font-size: 0.875rem;
+    color: #9ca3af;
+  }
+  
+  .result-category {
+    background: #f3f4f6;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+  }
+  
+  .loading {
+    text-align: center;
+    padding: 2rem;
+    color: #6b7280;
+  }
+  
+  .no-results {
+    text-align: center;
+    padding: 3rem;
+    color: #6b7280;
+  }
+  
+  /* Mobile responsive */
+  @media (max-width: 640px) {
+    .search-container {
+      padding: 0.5rem;
+    }
+    
+    .search-filters {
+      padding: 0 0.25rem;
+    }
+    
+    #search-input {
+      font-size: 16px; /* Prevent zoom on iOS */
+    }
+  }
+  
+  /* Dark mode support */
+  @media (prefers-color-scheme: dark) {
+    #search-input {
+      background: #1f2937;
+      border-color: #374151;
+      color: white;
+    }
+    
+    #search-input:focus {
+      border-color: #60a5fa;
+      box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+    }
+    
+    .filter-btn {
+      background: #374151;
+      border-color: #4b5563;
+      color: white;
+    }
+    
+    .filter-btn:hover {
+      background: #4b5563;
+    }
+    
+    .result-item {
+      background: #1f2937;
+      border-color: #374151;
+    }
+    
+    .result-title {
+      color: white;
+    }
+    
+    .result-snippet {
+      color: #d1d5db;
+    }
+  }
+</style>
+
+<script>
+  import Fuse from 'fuse.js';
+  
+  // Sample search data - in real app, this would come from content collections
+  const searchData = [
+    {
+      id: 1,
+      title: "Does Evolution Disprove God?",
+      snippet: "Evolution and faith can coexist. Many Christian scientists see evolution as God's method of creation...",
+      category: "science",
+      type: "apologetics",
+      url: "/faith-answers#evolution"
+    },
+    {
+      id: 2,
+      title: "Fine-Tuning of Physical Constants",
+      snippet: "The precise values of physical constants suggest intentional design rather than random chance...",
+      category: "science",
+      type: "evidence",
+      url: "/cosmology#fine-tuning"
+    },
+    {
+      id: 3,
+      title: "How Do We Know God Exists?",
+      snippet: "Multiple philosophical and scientific arguments point to the existence of a Creator...",
+      category: "philosophy",
+      type: "apologetics",
+      url: "/faith-answers#existence"
+    },
+    {
+      id: 4,
+      title: "DNA Information and Design",
+      snippet: "The information content in DNA exceeds what random processes could generate...",
+      category: "science",
+      type: "evidence",
+      url: "/biology#dna"
+    },
+    {
+      id: 5,
+      title: "Addressing the Problem of Evil",
+      snippet: "How can a loving God allow suffering? This classic question has thoughtful Christian responses...",
+      category: "philosophy",
+      type: "apologetics",
+      url: "/faith-answers#evil"
+    }
+  ];
+  
+  // Initialize Fuse.js for fuzzy search
+  const fuse = new Fuse(searchData, {
+    keys: ['title', 'snippet', 'category', 'type'],
+    threshold: 0.4,
+    includeScore: true
+  });
+  
+  let currentFilter = 'all';
+  
+  function performSearch(query) {
+    const resultsContainer = document.getElementById('search-results');
+    
+    if (!query.trim()) {
+      resultsContainer.innerHTML = '';
+      return;
+    }
+    
+    // Show loading state
+    resultsContainer.innerHTML = '<div class="loading">Searching...</div>';
+    
+    // Simulate slight delay for better UX
+    setTimeout(() => {
+      let results = fuse.search(query);
+      
+      // Apply category filter
+      if (currentFilter !== 'all') {
+        results = results.filter(result => 
+          result.item.category === currentFilter || result.item.type === currentFilter
+        );
+      }
+      
+      displayResults(results);
+    }, 150);
+  }
+  
+  function displayResults(results) {
+    const resultsContainer = document.getElementById('search-results');
+    
+    if (results.length === 0) {
+      resultsContainer.innerHTML = `
+        <div class="no-results">
+          <p>No results found. Try different keywords or check out our <a href="/faq" style="color: #3b82f6;">FAQ</a> page.</p>
+        </div>
+      `;
+      return;
+    }
+    
+    const html = results.map(result => {
+      const item = result.item;
+      return `
+        <div class="result-item">
+          <h3 class="result-title">
+            <a href="${item.url}" style="text-decoration: none; color: inherit;">
+              ${item.title}
+            </a>
+          </h3>
+          <p class="result-snippet">${item.snippet}</p>
+          <div class="result-meta">
+            <span class="result-category">${item.category}</span>
+            <span class="result-category">${item.type}</span>
+            <span>Relevance: ${Math.round((1 - result.score) * 100)}%</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+    
+    resultsContainer.innerHTML = html;
+  }
+  
+  // Event listeners
+  document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('search-input');
+    const searchBtn = document.getElementById('search-btn');
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    
+    // Search on input (with debounce)
+    let searchTimeout;
+    searchInput.addEventListener('input', (e) => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        performSearch(e.target.value);
+      }, 300);
+    });
+    
+    // Search on button click
+    searchBtn.addEventListener('click', () => {
+      performSearch(searchInput.value);
+    });
+    
+    // Search on Enter key
+    searchInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        performSearch(e.target.value);
+      }
+    });
+    
+    // Filter buttons
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.filter;
+        
+        // Re-run search if there's a query
+        if (searchInput.value.trim()) {
+          performSearch(searchInput.value);
+        }
+      });
+    });
+  });
+</script>

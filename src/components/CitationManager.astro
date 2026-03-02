@@ -1,0 +1,820 @@
+---
+// Advanced Citation Management System for NexusFaith
+// Manages scholarly sources, exports, and verification
+interface Citation {
+  id: string;
+  type: 'book' | 'journal' | 'website' | 'video' | 'conference';
+  title: string;
+  authors: string[];
+  publication?: string;
+  year: number;
+  url?: string;
+  doi?: string;
+  isbn?: string;
+  pages?: string;
+  tags: string[];
+  notes?: string;
+  credibilityScore: number;
+  lastVerified: string;
+}
+---
+
+<div class="citation-manager">
+  <div class="citation-header">
+    <h2>📚 Citation Manager</h2>
+    <div class="citation-controls">
+      <button id="add-citation" class="btn btn-primary" aria-label="Add new citation">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 2v10m0 0v10m0-10h10M12 12H2"/>
+        </svg>
+        Add Citation
+      </button>
+      <button id="export-citations" class="btn btn-secondary" aria-label="Export citations">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m4-5l5 5 5-5m-5 5V3"/>
+        </svg>
+        Export
+      </button>
+      <div class="search-citations">
+        <input 
+          type="text" 
+          id="citation-search" 
+          placeholder="Search citations..." 
+          aria-label="Search citations"
+        />
+        <select id="citation-filter" aria-label="Filter by type">
+          <option value="">All Types</option>
+          <option value="book">Books</option>
+          <option value="journal">Journals</option>
+          <option value="website">Websites</option>
+          <option value="video">Videos</option>
+          <option value="conference">Conferences</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  
+  <div class="citation-list" id="citation-list" role="region" aria-label="Citations list">
+    <!-- Citations dynamically populated here -->
+  </div>
+  
+  <!-- Citation Entry Modal -->
+  <div id="citation-modal" class="modal" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-title">Add Citation</h3>
+        <button class="modal-close" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="citation-form">
+          <div class="form-group">
+            <label for="citation-type">Type *</label>
+            <select id="citation-type" name="type" required>
+              <option value="">Select type...</option>
+              <option value="book">Book</option>
+              <option value="journal">Journal Article</option>
+              <option value="website">Website</option>
+              <option value="video">Video</option>
+              <option value="conference">Conference Paper</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="citation-title">Title *</label>
+            <input type="text" id="citation-title" name="title" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="citation-authors">Authors (comma-separated) *</label>
+            <input type="text" id="citation-authors" name="authors" required 
+                   placeholder="John Smith, Jane Doe">
+          </div>
+          
+          <div class="form-group">
+            <label for="citation-publication">Publication/Publisher</label>
+            <input type="text" id="citation-publication" name="publication">
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="citation-year">Year *</label>
+              <input type="number" id="citation-year" name="year" required min="1800" max="2030">
+            </div>
+            <div class="form-group">
+              <label for="citation-pages">Pages</label>
+              <input type="text" id="citation-pages" name="pages" placeholder="123-145">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="citation-url">URL</label>
+            <input type="url" id="citation-url" name="url">
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="citation-doi">DOI</label>
+              <input type="text" id="citation-doi" name="doi" placeholder="10.1000/182">
+            </div>
+            <div class="form-group">
+              <label for="citation-isbn">ISBN</label>
+              <input type="text" id="citation-isbn" name="isbn" placeholder="978-0-123456-78-9">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="citation-tags">Tags (comma-separated)</label>
+            <input type="text" id="citation-tags" name="tags" 
+                   placeholder="apologetics, science, evolution">
+          </div>
+          
+          <div class="form-group">
+            <label for="citation-notes">Notes</label>
+            <textarea id="citation-notes" name="notes" rows="3"></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="citation-credibility">Credibility Score (1-10)</label>
+            <input type="range" id="citation-credibility" name="credibilityScore" 
+                   min="1" max="10" value="8">
+            <div class="credibility-labels">
+              <span>Low</span>
+              <span id="credibility-value">8</span>
+              <span>High</span>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="cancel-citation">Cancel</button>
+        <button type="submit" form="citation-form" class="btn btn-primary">Save Citation</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .citation-manager {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+  
+  .citation-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
+  .citation-header h2 {
+    color: #2d3748;
+    font-size: 1.75rem;
+    margin: 0;
+  }
+  
+  .citation-controls {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  
+  .search-citations {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .search-citations input {
+    padding: 0.5rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    min-width: 200px;
+  }
+  
+  .search-citations select {
+    padding: 0.5rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background: white;
+  }
+  
+  .btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+  }
+  
+  .btn-primary {
+    background: #4299e1;
+    color: white;
+  }
+  
+  .btn-primary:hover {
+    background: #3182ce;
+  }
+  
+  .btn-secondary {
+    background: #e2e8f0;
+    color: #4a5568;
+  }
+  
+  .btn-secondary:hover {
+    background: #cbd5e0;
+  }
+  
+  .citation-list {
+    display: grid;
+    gap: 1rem;
+  }
+  
+  .citation-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1.5rem;
+    transition: all 0.2s;
+  }
+  
+  .citation-card:hover {
+    border-color: #cbd5e0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  
+  .citation-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 1rem;
+  }
+  
+  .citation-type {
+    background: #4299e1;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  
+  .citation-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .citation-actions button {
+    background: none;
+    border: 1px solid #e2e8f0;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.75rem;
+  }
+  
+  .citation-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 0.5rem;
+  }
+  
+  .citation-authors {
+    color: #4a5568;
+    margin-bottom: 0.5rem;
+  }
+  
+  .citation-publication {
+    color: #718096;
+    font-style: italic;
+    margin-bottom: 1rem;
+  }
+  
+  .citation-tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+  
+  .citation-tag {
+    background: #f7fafc;
+    color: #4a5568;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+  }
+  
+  .credibility-score {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #4a5568;
+    font-size: 0.875rem;
+  }
+  
+  .credibility-stars {
+    color: #f6ad55;
+  }
+  
+  /* Modal Styles */
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    overflow-y: auto;
+  }
+  
+  .modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  
+  .modal-content {
+    background: white;
+    border-radius: 8px;
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  
+  .modal-header h3 {
+    margin: 0;
+    color: #2d3748;
+  }
+  
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #9ca3af;
+  }
+  
+  .modal-body {
+    padding: 1.5rem;
+  }
+  
+  .modal-footer {
+    padding: 1.5rem;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+  }
+  
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #374151;
+  }
+  
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 1rem;
+  }
+  
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    outline: none;
+    border-color: #4299e1;
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+  }
+  
+  .credibility-labels {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-top: 0.5rem;
+  }
+  
+  #credibility-value {
+    font-weight: 600;
+    color: #4299e1;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .citation-header {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    
+    .citation-controls {
+      justify-content: space-between;
+    }
+    
+    .search-citations {
+      flex-direction: column;
+    }
+    
+    .search-citations input {
+      min-width: auto;
+    }
+    
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+    
+    .modal-footer {
+      flex-direction: column;
+    }
+  }
+</style>
+
+<script>
+  // Citation Management System
+  class CitationManager {
+    constructor() {
+      this.citations = this.loadCitations();
+      this.init();
+    }
+    
+    init() {
+      this.bindEvents();
+      this.renderCitations();
+    }
+    
+    bindEvents() {
+      // Add citation button
+      document.getElementById('add-citation')?.addEventListener('click', () => {
+        this.openModal();
+      });
+      
+      // Export citations
+      document.getElementById('export-citations')?.addEventListener('click', () => {
+        this.exportCitations();
+      });
+      
+      // Search and filter
+      document.getElementById('citation-search')?.addEventListener('input', (e) => {
+        this.filterCitations(e.target.value);
+      });
+      
+      document.getElementById('citation-filter')?.addEventListener('change', (e) => {
+        this.filterByType(e.target.value);
+      });
+      
+      // Modal events
+      document.getElementById('citation-modal')?.addEventListener('click', (e) => {
+        if (e.target.classList.contains('modal')) {
+          this.closeModal();
+        }
+      });
+      
+      document.querySelector('.modal-close')?.addEventListener('click', () => {
+        this.closeModal();
+      });
+      
+      document.getElementById('cancel-citation')?.addEventListener('click', () => {
+        this.closeModal();
+      });
+      
+      // Form submission
+      document.getElementById('citation-form')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.saveCitation(e.target);
+      });
+      
+      // Credibility score display
+      document.getElementById('citation-credibility')?.addEventListener('input', (e) => {
+        document.getElementById('credibility-value').textContent = e.target.value;
+      });
+    }
+    
+    openModal(citation = null) {
+      const modal = document.getElementById('citation-modal');
+      const title = document.getElementById('modal-title');
+      const form = document.getElementById('citation-form');
+      
+      if (citation) {
+        title.textContent = 'Edit Citation';
+        this.populateForm(form, citation);
+      } else {
+        title.textContent = 'Add Citation';
+        form.reset();
+        document.getElementById('credibility-value').textContent = '8';
+      }
+      
+      modal.classList.add('active');
+      modal.setAttribute('aria-hidden', 'false');
+      
+      // Focus first input
+      const firstInput = form.querySelector('input, select');
+      if (firstInput) firstInput.focus();
+    }
+    
+    closeModal() {
+      const modal = document.getElementById('citation-modal');
+      modal.classList.remove('active');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+    
+    populateForm(form, citation) {
+      Object.keys(citation).forEach(key => {
+        const field = form.querySelector(`[name="${key}"]`);
+        if (field) {
+          if (key === 'authors') {
+            field.value = citation[key].join(', ');
+          } else if (key === 'tags') {
+            field.value = citation[key].join(', ');
+          } else {
+            field.value = citation[key];
+          }
+        }
+      });
+    }
+    
+    saveCitation(form) {
+      const formData = new FormData(form);
+      const citation = {
+        id: Date.now().toString(),
+        type: formData.get('type'),
+        title: formData.get('title'),
+        authors: formData.get('authors').split(',').map(a => a.trim()),
+        publication: formData.get('publication'),
+        year: parseInt(formData.get('year')),
+        url: formData.get('url'),
+        doi: formData.get('doi'),
+        isbn: formData.get('isbn'),
+        pages: formData.get('pages'),
+        tags: formData.get('tags') ? formData.get('tags').split(',').map(t => t.trim()) : [],
+        notes: formData.get('notes'),
+        credibilityScore: parseInt(formData.get('credibilityScore')),
+        lastVerified: new Date().toISOString().split('T')[0]
+      };
+      
+      this.citations.push(citation);
+      this.saveCitations();
+      this.renderCitations();
+      this.closeModal();
+      
+      // Announce to screen readers
+      this.announceToScreenReader(`Citation "${citation.title}" added successfully.`);
+    }
+    
+    deleteCitation(id) {
+      const citation = this.citations.find(c => c.id === id);
+      if (citation && confirm(`Delete citation "${citation.title}"?`)) {
+        this.citations = this.citations.filter(c => c.id !== id);
+        this.saveCitations();
+        this.renderCitations();
+        this.announceToScreenReader(`Citation "${citation.title}" deleted.`);
+      }
+    }
+    
+    renderCitations(filteredCitations = null) {
+      const container = document.getElementById('citation-list');
+      const citations = filteredCitations || this.citations;
+      
+      if (citations.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 3rem; color: #6b7280;">
+            <p>No citations found. Add your first citation to get started!</p>
+          </div>
+        `;
+        return;
+      }
+      
+      container.innerHTML = citations.map(citation => this.renderCitationCard(citation)).join('');
+    }
+    
+    renderCitationCard(citation) {
+      const stars = '★'.repeat(Math.floor(citation.credibilityScore / 2));
+      const typeColors = {
+        book: '#10b981',
+        journal: '#3b82f6',
+        website: '#8b5cf6',
+        video: '#ef4444',
+        conference: '#f59e0b'
+      };
+      
+      return `
+        <div class="citation-card">
+          <div class="citation-meta">
+            <span class="citation-type" style="background: ${typeColors[citation.type]}">
+              ${citation.type}
+            </span>
+            <div class="citation-actions">
+              <button onclick="window.citationManager.copyCitation('${citation.id}')" 
+                      aria-label="Copy citation">Copy</button>
+              <button onclick="window.citationManager.editCitation('${citation.id}')"
+                      aria-label="Edit citation">Edit</button>
+              <button onclick="window.citationManager.deleteCitation('${citation.id}')"
+                      aria-label="Delete citation">Delete</button>
+            </div>
+          </div>
+          
+          <h3 class="citation-title">${this.escapeHtml(citation.title)}</h3>
+          <div class="citation-authors">${citation.authors.map(a => this.escapeHtml(a)).join(', ')}</div>
+          ${citation.publication ? `<div class="citation-publication">${this.escapeHtml(citation.publication)} (${citation.year})</div>` : `<div class="citation-publication">${citation.year}</div>`}
+          
+          ${citation.tags.length > 0 ? `
+            <div class="citation-tags">
+              ${citation.tags.map(tag => `<span class="citation-tag">${this.escapeHtml(tag)}</span>`).join('')}
+            </div>
+          ` : ''}
+          
+          <div class="credibility-score">
+            <span class="credibility-stars">${stars}</span>
+            <span>Credibility: ${citation.credibilityScore}/10</span>
+            <span>•</span>
+            <span>Verified: ${citation.lastVerified}</span>
+          </div>
+          
+          ${citation.url ? `
+            <div style="margin-top: 1rem;">
+              <a href="${citation.url}" target="_blank" rel="noopener noreferrer"
+                 style="color: #4299e1; text-decoration: none;">
+                View Source →
+              </a>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }
+    
+    copyCitation(id) {
+      const citation = this.citations.find(c => c.id === id);
+      if (!citation) return;
+      
+      const formatted = this.formatCitation(citation, 'apa');
+      navigator.clipboard.writeText(formatted).then(() => {
+        this.announceToScreenReader('Citation copied to clipboard');
+      });
+    }
+    
+    formatCitation(citation, style = 'apa') {
+      // APA format
+      const authors = citation.authors.join(', ');
+      const year = citation.year;
+      const title = citation.title;
+      
+      switch (citation.type) {
+        case 'book':
+          return `${authors} (${year}). ${title}. ${citation.publication}.`;
+        case 'journal':
+          return `${authors} (${year}). ${title}. ${citation.publication}.`;
+        case 'website':
+          return `${authors} (${year}). ${title}. Retrieved from ${citation.url}`;
+        default:
+          return `${authors} (${year}). ${title}.`;
+      }
+    }
+    
+    filterCitations(query) {
+      if (!query.trim()) {
+        this.renderCitations();
+        return;
+      }
+      
+      const filtered = this.citations.filter(citation =>
+        citation.title.toLowerCase().includes(query.toLowerCase()) ||
+        citation.authors.some(author => author.toLowerCase().includes(query.toLowerCase())) ||
+        citation.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
+      );
+      
+      this.renderCitations(filtered);
+    }
+    
+    filterByType(type) {
+      if (!type) {
+        this.renderCitations();
+        return;
+      }
+      
+      const filtered = this.citations.filter(citation => citation.type === type);
+      this.renderCitations(filtered);
+    }
+    
+    exportCitations() {
+      const formatted = this.citations.map(c => this.formatCitation(c)).join('\n\n');
+      const blob = new Blob([formatted], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'nexusfaith-citations.txt';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      this.announceToScreenReader('Citations exported successfully');
+    }
+    
+    loadCitations() {
+      try {
+        const stored = localStorage.getItem('nexusfaith-citations');
+        return stored ? JSON.parse(stored) : this.getDefaultCitations();
+      } catch (e) {
+        console.warn('Failed to load citations:', e);
+        return this.getDefaultCitations();
+      }
+    }
+    
+    saveCitations() {
+      try {
+        localStorage.setItem('nexusfaith-citations', JSON.stringify(this.citations));
+      } catch (e) {
+        console.warn('Failed to save citations:', e);
+      }
+    }
+    
+    getDefaultCitations() {
+      return [
+        {
+          id: '1',
+          type: 'book',
+          title: 'The Language of God',
+          authors: ['Francis Collins'],
+          publication: 'Free Press',
+          year: 2006,
+          tags: ['science', 'faith', 'genetics'],
+          credibilityScore: 10,
+          lastVerified: '2026-03-01'
+        },
+        {
+          id: '2',
+          type: 'journal',
+          title: 'The Anthropic Cosmological Principle',
+          authors: ['John D. Barrow', 'Frank J. Tipler'],
+          publication: 'Oxford University Press',
+          year: 1986,
+          tags: ['cosmology', 'fine-tuning', 'anthropic principle'],
+          credibilityScore: 9,
+          lastVerified: '2026-03-01'
+        }
+      ];
+    }
+    
+    announceToScreenReader(message) {
+      const announcer = document.getElementById('sr-announcements');
+      if (announcer) {
+        announcer.textContent = message;
+        setTimeout(() => {
+          announcer.textContent = '';
+        }, 1000);
+      }
+    }
+    
+    escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+  }
+  
+  // Initialize on load
+  if (typeof window !== 'undefined') {
+    window.addEventListener('DOMContentLoaded', () => {
+      window.citationManager = new CitationManager();
+    });
+  }
+</script>
+
+<!-- Screen reader announcements -->
+<div id="sr-announcements" class="sr-only" aria-live="polite" aria-atomic="true"></div>

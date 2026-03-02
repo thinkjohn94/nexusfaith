@@ -1,0 +1,122 @@
+{
+  "name": "NexusFaith - Science Meets Faith",
+  "short_name": "NexusFaith",
+  "description": "Educated faith through science and apologetics. Explore evidence, ask questions, strengthen belief.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#667eea",
+  "theme_color": "#667eea",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "dir": "ltr",
+  
+  "icons": [
+    {
+      "src": "/icons/icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon-96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon-128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon-152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon-384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  
+  "shortcuts": [
+    {
+      "name": "Faith Q&A",
+      "short_name": "Q&A",
+      "description": "Browse apologetics questions and answers",
+      "url": "/faith-answers",
+      "icons": [{ "src": "/icons/qa-icon.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Conversation Trainer",
+      "short_name": "Trainer",
+      "description": "Practice apologetics conversations",
+      "url": "/conversation-trainer",
+      "icons": [{ "src": "/icons/trainer-icon.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Science Evidence",
+      "short_name": "Science",
+      "description": "Explore scientific evidence for faith",
+      "url": "/cosmology",
+      "icons": [{ "src": "/icons/science-icon.png", "sizes": "96x96" }]
+    }
+  ],
+  
+  "categories": ["education", "religion", "reference"],
+  "screenshots": [
+    {
+      "src": "/screenshots/home-mobile.png",
+      "sizes": "640x1136",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Home page on mobile"
+    },
+    {
+      "src": "/screenshots/qa-desktop.png",
+      "sizes": "1280x800",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Q&A interface on desktop"
+    }
+  ],
+  
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  },
+  
+  "protocol_handlers": [
+    {
+      "protocol": "web+nexusfaith",
+      "url": "/deep-link?query=%s"
+    }
+  ]
+}
