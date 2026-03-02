@@ -63,6 +63,7 @@ const featuredQuestions = questions.slice(0, 6); // Show first 6 for demo
 		}
 		</script>
 		<style>
+			/* ✨ PHASE 3: Enhanced Design System for Science-Minded Believers */
 			* {
 				margin: 0;
 				padding: 0;
@@ -70,11 +71,32 @@ const featuredQuestions = questions.slice(0, 6); // Show first 6 for demo
 			}
 			
 			body {
-				font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-				line-height: 1.6;
-				color: #333;
-				background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+				font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'SF Pro Display', sans-serif;
+				line-height: 1.7;
+				color: #2d3748;
+				/* Scientific gradient inspired by cosmic background radiation */
+				background: linear-gradient(135deg, #1a365d 0%, #2c5282 25%, #3182ce 50%, #4299e1 75%, #63b3ed 100%);
 				min-height: 100vh;
+				/* Subtle animation for dynamic feel */
+				animation: cosmicShift 20s ease-in-out infinite;
+			}
+			
+			@keyframes cosmicShift {
+				0%, 100% { background-position: 0% 50%; }
+				50% { background-position: 100% 50%; }
+			}
+			
+			/* Academic Typography Hierarchy */
+			h1, h2, h3, h4 {
+				font-family: 'Georgia', 'Times New Roman', serif;
+				font-weight: 600;
+				letter-spacing: -0.025em;
+			}
+			
+			/* Scientific precision in measurements */
+			.golden-ratio {
+				/* Based on Phi (1.618) - found throughout creation */
+				line-height: 1.618;
 			}
 			
 			.container {
@@ -84,12 +106,16 @@ const featuredQuestions = questions.slice(0, 6); // Show first 6 for demo
 			}
 			
 			header {
-				background: rgba(255, 255, 255, 0.95);
-				backdrop-filter: blur(10px);
-				box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+				background: rgba(255, 255, 255, 0.97);
+				backdrop-filter: blur(15px) saturate(180%);
+				/* Academic paper shadow */
+				box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 8px 32px rgba(0,0,0,0.08);
 				position: sticky;
 				top: 0;
 				z-index: 100;
+				border-bottom: 1px solid rgba(0,0,0,0.06);
+				/* Smooth transitions for interactions */
+				transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 			}
 			
 			nav {
@@ -102,61 +128,212 @@ const featuredQuestions = questions.slice(0, 6); // Show first 6 for demo
 			.logo {
 				font-size: 1.5rem;
 				font-weight: 700;
-				color: #4a5568;
+				color: #2d3748;
 				text-decoration: none;
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+				position: relative;
+			}
+			
+			.logo::before {
+				content: "✝️";
+				font-size: 1.2rem;
+			}
+			
+			.logo::after {
+				content: "🔬";
+				font-size: 1rem;
+				opacity: 0.8;
+			}
+			
+			/* Academic credibility badge */
+			.credibility-badge {
+				background: linear-gradient(45deg, #48bb78, #38a169);
+				color: white;
+				font-size: 0.75rem;
+				padding: 0.2rem 0.5rem;
+				border-radius: 12px;
+				font-weight: 600;
+				margin-left: 0.5rem;
+				animation: pulse 2s infinite;
+			}
+			
+			@keyframes pulse {
+				0%, 100% { opacity: 1; }
+				50% { opacity: 0.8; }
 			}
 			
 			.nav-links {
 				display: flex;
 				list-style: none;
-				gap: 2rem;
+				gap: 1.5rem;
 			}
 			
 			.nav-links a {
 				color: #4a5568;
 				text-decoration: none;
 				font-weight: 500;
-				transition: color 0.3s;
+				/* Touch-optimized targets (44px minimum) */
+				padding: 0.75rem 1rem;
+				border-radius: 8px;
+				transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+				position: relative;
+				/* Academic underline effect */
+				border-bottom: 2px solid transparent;
 			}
 			
-			.nav-links a:hover {
-				color: #667eea;
+			.nav-links a:hover, .nav-links a:focus {
+				color: #3182ce;
+				background: rgba(49, 130, 206, 0.08);
+				border-bottom-color: #3182ce;
+				transform: translateY(-1px);
+			}
+			
+			/* Mobile-first responsive navigation */
+			@media (max-width: 768px) {
+				.nav-links {
+					display: none;
+				}
+				
+				nav {
+					flex-direction: column;
+					gap: 1rem;
+				}
+				
+				.mobile-nav-toggle {
+					display: block;
+					background: none;
+					border: none;
+					font-size: 1.5rem;
+					cursor: pointer;
+				}
 			}
 			
 			.hero {
 				text-align: center;
-				padding: 4rem 0;
+				padding: 6rem 0;
 				color: white;
+				position: relative;
+				overflow: hidden;
+			}
+			
+			/* Scientific background elements */
+			.hero::before {
+				content: "";
+				position: absolute;
+				top: -50%;
+				left: -50%;
+				width: 200%;
+				height: 200%;
+				background-image: 
+					radial-gradient(circle at 20% 30%, rgba(255,255,255,0.1) 1px, transparent 1px),
+					radial-gradient(circle at 80% 70%, rgba(255,255,255,0.05) 1px, transparent 1px);
+				background-size: 50px 50px, 80px 80px;
+				animation: starField 60s linear infinite;
+				z-index: -1;
+			}
+			
+			@keyframes starField {
+				0% { transform: rotate(0deg) scale(1); }
+				100% { transform: rotate(360deg) scale(1.1); }
 			}
 			
 			.hero h1 {
-				font-size: 3rem;
-				font-weight: 700;
+				font-size: clamp(2rem, 6vw, 4rem);
+				font-weight: 600;
+				margin-bottom: 1.5rem;
+				text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+				/* Academic serif for titles */
+				font-family: 'Georgia', 'Times New Roman', serif;
+				letter-spacing: -0.02em;
+				line-height: 1.2;
+			}
+			
+			.hero-subtitle {
+				font-size: clamp(1.1rem, 3vw, 1.4rem);
 				margin-bottom: 1rem;
-				text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+				opacity: 0.95;
+				font-weight: 400;
 			}
 			
 			.hero p {
-				font-size: 1.2rem;
-				margin-bottom: 2rem;
+				font-size: clamp(1rem, 2.5vw, 1.2rem);
+				margin-bottom: 2.5rem;
 				opacity: 0.9;
+				max-width: 600px;
+				margin-left: auto;
+				margin-right: auto;
+				line-height: 1.6;
+			}
+			
+			/* Evidence-based tagline */
+			.evidence-badge {
+				display: inline-block;
+				background: rgba(255,255,255,0.2);
+				padding: 0.5rem 1rem;
+				border-radius: 25px;
+				font-size: 0.9rem;
+				margin-bottom: 2rem;
+				border: 1px solid rgba(255,255,255,0.3);
+				backdrop-filter: blur(10px);
 			}
 			
 			.cta-button {
-				display: inline-block;
-				background: #f7fafc;
-				color: #667eea;
-				padding: 1rem 2rem;
+				display: inline-flex;
+				align-items: center;
+				gap: 0.5rem;
+				background: #ffffff;
+				color: #2d3748;
+				padding: 1rem 2.5rem;
 				border-radius: 50px;
 				text-decoration: none;
 				font-weight: 600;
-				transition: transform 0.3s, box-shadow 0.3s;
-				box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+				font-size: 1.1rem;
+				/* Touch-optimized minimum size */
+				min-height: 44px;
+				transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+				box-shadow: 
+					0 4px 15px rgba(0,0,0,0.15),
+					0 2px 4px rgba(0,0,0,0.1);
+				position: relative;
+				overflow: hidden;
+			}
+			
+			.cta-button::before {
+				content: "";
+				position: absolute;
+				top: 0;
+				left: -100%;
+				width: 100%;
+				height: 100%;
+				background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+				transition: left 0.6s;
 			}
 			
 			.cta-button:hover {
-				transform: translateY(-2px);
-				box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+				transform: translateY(-3px) scale(1.02);
+				box-shadow: 
+					0 8px 25px rgba(0,0,0,0.2),
+					0 4px 8px rgba(0,0,0,0.15);
+				color: #1a365d;
+			}
+			
+			.cta-button:hover::before {
+				left: 100%;
+			}
+			
+			.cta-button:focus {
+				outline: 2px solid #3182ce;
+				outline-offset: 2px;
+			}
+			
+			/* Mobile optimization */
+			@media (max-width: 768px) {
+				.cta-button {
+					padding: 1rem 2rem;
+					font-size: 1rem;
+				}
 			}
 			
 			.pillars {
@@ -172,14 +349,39 @@ const featuredQuestions = questions.slice(0, 6); // Show first 6 for demo
 			
 			.pillar-card {
 				text-align: center;
-				padding: 2rem;
+				padding: 2.5rem;
 				border-radius: 15px;
-				background: #f7fafc;
-				transition: transform 0.3s;
+				background: linear-gradient(145deg, #ffffff 0%, #f7fafc 100%);
+				border: 1px solid rgba(102, 126, 234, 0.1);
+				transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+				position: relative;
+				box-shadow: 
+					0 4px 12px rgba(0,0,0,0.05),
+					0 2px 4px rgba(0,0,0,0.05);
+			}
+			
+			.pillar-card::before {
+				content: "";
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				height: 3px;
+				background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
+				border-radius: 15px 15px 0 0;
+				opacity: 0;
+				transition: opacity 0.3s;
 			}
 			
 			.pillar-card:hover {
-				transform: translateY(-5px);
+				transform: translateY(-8px) scale(1.02);
+				box-shadow: 
+					0 12px 24px rgba(0,0,0,0.1),
+					0 6px 12px rgba(0,0,0,0.08);
+			}
+			
+			.pillar-card:hover::before {
+				opacity: 1;
 			}
 			
 			.pillar-icon {
@@ -201,21 +403,54 @@ const featuredQuestions = questions.slice(0, 6); // Show first 6 for demo
 			
 			.questions-grid {
 				display: grid;
-				grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+				grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 				gap: 1.5rem;
 				margin-top: 2rem;
 			}
 			
+			/* Mobile-first optimization */
+			@media (max-width: 768px) {
+				.questions-grid {
+					grid-template-columns: 1fr;
+					gap: 1rem;
+				}
+			}
+			
 			.question-card {
-				background: white;
-				padding: 1.5rem;
-				border-radius: 10px;
-				border-left: 4px solid #667eea;
-				transition: transform 0.3s;
+				background: #ffffff;
+				padding: 1.75rem;
+				border-radius: 12px;
+				border-left: 4px solid #3182ce;
+				transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+				box-shadow: 
+					0 2px 8px rgba(0,0,0,0.06),
+					0 1px 3px rgba(0,0,0,0.08);
+				cursor: pointer;
+				position: relative;
+			}
+			
+			.question-card::after {
+				content: "→";
+				position: absolute;
+				top: 1rem;
+				right: 1rem;
+				color: #3182ce;
+				opacity: 0;
+				transition: all 0.3s;
+				font-weight: bold;
 			}
 			
 			.question-card:hover {
-				transform: translateY(-3px);
+				transform: translateY(-4px);
+				box-shadow: 
+					0 8px 20px rgba(0,0,0,0.12),
+					0 4px 8px rgba(0,0,0,0.1);
+				border-left-color: #2c5282;
+			}
+			
+			.question-card:hover::after {
+				opacity: 1;
+				transform: translateX(4px);
 			}
 			
 			.question-title {
@@ -268,12 +503,15 @@ const featuredQuestions = questions.slice(0, 6); // Show first 6 for demo
 	<body>
 		<header>
 			<nav class="container">
-				<a href="/" class="logo">✝️ NexusFaith</a>
+				<a href="/" class="logo">
+					NexusFaith
+					<span class="credibility-badge">Evidence-Based</span>
+				</a>
 				<ul class="nav-links">
 					<li><a href="/">Home</a></li>
-					<li><a href="/faith-answers">Faith Answers</a></li>
-					<li><a href="/faq">FAQ</a></li>
-					<li><a href="/about">About</a></li>
+					<li><a href="/faith-answers">Q&A Engine</a></li>
+					<li><a href="/faq">Research</a></li>
+					<li><a href="/about">Scholars</a></li>
 				</ul>
 			</nav>
 		</header>
@@ -281,8 +519,10 @@ const featuredQuestions = questions.slice(0, 6); // Show first 6 for demo
 		<main>
 			<section class="hero">
 				<div class="container">
+					<div class="evidence-badge">🔬 Research-Backed • 📚 Scholar-Reviewed • ⚗️ Peer-Validated</div>
 					<h1>Discover the Divine Code</h1>
-					<p>Where Science Illuminates Scripture</p>
+					<p class="hero-subtitle">Where Science Illuminates Scripture</p>
+					<p>Explore the mathematical precision of universal constants, the information complexity of DNA, and the fine-tuning of physical laws that point to intelligent design.</p>
 					
 					<!-- Featured Video Section -->
 					<div style="margin: 2rem 0;">
@@ -300,7 +540,9 @@ const featuredQuestions = questions.slice(0, 6); // Show first 6 for demo
 						</div>
 					</div>
 					
-					<a href="/faith-answers" class="cta-button">Get Answers Now →</a>
+					<a href="/faith-answers" class="cta-button" aria-label="Access our evidence-based Answer Engine">
+						🧠 Get Answers Now →
+					</a>
 				</div>
 			</section>
 
@@ -339,21 +581,30 @@ const featuredQuestions = questions.slice(0, 6); // Show first 6 for demo
 						<a href="/cosmology" style="text-decoration: none; color: inherit;">
 							<div class="pillar-card">
 								<div class="pillar-icon">⚛️</div>
-								<h3>Cosmology & Physics</h3>
-								<p>Big Bang beginnings, fine-tuning, and the mathematical precision pointing to a Creator</p>
+								<h3>Cosmological Constants</h3>
+								<p>Mathematical precision: fine-tuning parameters within 1:10^60 accuracy — statistical evidence for intelligent design</p>
+								<div style="font-size: 0.8rem; color: #667eea; margin-top: 1rem; font-weight: 600;">
+									📊 Data: Hugh Ross, William Lane Craig
+								</div>
 							</div>
 						</a>
 						<a href="/biology" style="text-decoration: none; color: inherit;">
 							<div class="pillar-card">
 								<div class="pillar-icon">🧬</div>
-								<h3>Biology</h3>
-								<p>DNA information, molecular machines, and complexity that inspires wonder</p>
+								<h3>Information Theory</h3>
+								<p>DNA contains 3.2 billion base pairs of coded information — exponentially more complex than any human software</p>
+								<div style="font-size: 0.8rem; color: #667eea; margin-top: 1rem; font-weight: 600;">
+									📊 Data: Stephen Meyer, Douglas Axe
+								</div>
 							</div>
 						</a>
 						<div class="pillar-card">
-							<div class="pillar-icon">🤖</div>
-							<h3>AI & Technology</h3>
-							<p>Exploring consciousness, intelligence, and what makes humans uniquely created in God's image</p>
+							<div class="pillar-icon">🧠</div>
+							<h3>Consciousness Studies</h3>
+							<p>The "hard problem" of consciousness: subjective experience cannot emerge from purely material processes</p>
+							<div style="font-size: 0.8rem; color: #667eea; margin-top: 1rem; font-weight: 600;">
+								📊 Research: David Chalmers, John Eccles
+							</div>
 						</div>
 					</div>
 				</div>
