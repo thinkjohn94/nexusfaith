@@ -1,0 +1,303 @@
+---
+// Mobile UX Audit Component for Touch Optimization
+// This component provides real-time mobile experience monitoring
+---
+
+<div id="mobile-audit" class="mobile-audit" style="display: none;">
+  <div class="audit-header">
+    <h3>📱 Mobile UX Audit</h3>
+    <button onclick="closeMobileAudit()" aria-label="Close audit">×</button>
+  </div>
+  <div class="audit-content">
+    <div class="audit-section">
+      <h4>Touch Targets</h4>
+      <div id="touch-target-report"></div>
+    </div>
+    <div class="audit-section">
+      <h4>Viewport</h4>
+      <div id="viewport-report"></div>
+    </div>
+    <div class="audit-section">
+      <h4>Performance</h4>
+      <div id="performance-report"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Floating Audit Trigger (Development Only) -->
+{import.meta.env.DEV && (
+  <button 
+    id="audit-trigger" 
+    class="audit-trigger"
+    onclick="toggleMobileAudit()"
+    aria-label="Open mobile audit"
+    style="position: fixed; bottom: 20px; right: 20px; z-index: 2000; background: #3b82f6; color: white; border: none; border-radius: 50%; width: 56px; height: 56px; font-size: 1.2rem; cursor: pointer; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">
+    📱
+  </button>
+)}
+
+<style>
+  .mobile-audit {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 320px;
+    max-width: calc(100vw - 40px);
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    z-index: 2001;
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+  }
+
+  .audit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #3b82f6;
+    color: white;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .audit-header h3 {
+    margin: 0;
+    font-size: 1rem;
+  }
+
+  .audit-header button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    transition: background 0.2s;
+  }
+
+  .audit-header button:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .audit-content {
+    padding: 16px;
+  }
+
+  .audit-section {
+    margin-bottom: 16px;
+  }
+
+  .audit-section h4 {
+    margin: 0 0 8px 0;
+    font-size: 0.9rem;
+    color: #374151;
+    font-weight: 600;
+  }
+
+  .audit-metric {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f3f4f6;
+    font-size: 0.8rem;
+  }
+
+  .metric-label {
+    color: #6b7280;
+  }
+
+  .metric-value {
+    font-weight: 600;
+  }
+
+  .metric-good {
+    color: #10b981;
+  }
+
+  .metric-warning {
+    color: #f59e0b;
+  }
+
+  .metric-bad {
+    color: #ef4444;
+  }
+
+  @media (max-width: 768px) {
+    .mobile-audit {
+      top: 10px;
+      right: 10px;
+      left: 10px;
+      width: auto;
+      max-width: none;
+    }
+  }
+</style>
+
+<script>
+  // Mobile UX Audit Functionality
+  let auditVisible = false;
+
+  function toggleMobileAudit() {
+    const audit = document.getElementById('mobile-audit');
+    auditVisible = !auditVisible;
+    
+    if (auditVisible) {
+      audit.style.display = 'block';
+      runMobileAudit();
+    } else {
+      audit.style.display = 'none';
+    }
+  }
+
+  function closeMobileAudit() {
+    document.getElementById('mobile-audit').style.display = 'none';
+    auditVisible = false;
+  }
+
+  function runMobileAudit() {
+    // Touch Target Analysis
+    auditTouchTargets();
+    
+    // Viewport Analysis
+    auditViewport();
+    
+    // Performance Analysis
+    auditPerformance();
+  }
+
+  function auditTouchTargets() {
+    const report = document.getElementById('touch-target-report');
+    const clickableElements = document.querySelectorAll('a, button, [onclick], [role="button"], input[type="button"], input[type="submit"]');
+    
+    let totalElements = clickableElements.length;
+    let optimizedElements = 0;
+    let smallElements = [];
+
+    clickableElements.forEach(el => {
+      const rect = el.getBoundingClientRect();
+      const size = Math.min(rect.width, rect.height);
+      
+      if (size >= 44) {
+        optimizedElements++;
+      } else {
+        smallElements.push({
+          element: el,
+          size: size,
+          text: el.textContent?.slice(0, 20) + '...' || el.tagName
+        });
+      }
+    });
+
+    const percentage = Math.round((optimizedElements / totalElements) * 100);
+    const status = percentage >= 90 ? 'good' : percentage >= 70 ? 'warning' : 'bad';
+
+    report.innerHTML = `
+      <div class="audit-metric">
+        <span class="metric-label">Touch Targets</span>
+        <span class="metric-value metric-${status}">${optimizedElements}/${totalElements} (${percentage}%)</span>
+      </div>
+      ${smallElements.length > 0 ? `
+        <div style="margin-top: 8px; font-size: 0.7rem; color: #6b7280;">
+          Small targets: ${smallElements.slice(0, 3).map(item => item.text).join(', ')}
+          ${smallElements.length > 3 ? ` and ${smallElements.length - 3} more` : ''}
+        </div>
+      ` : ''}
+    `;
+  }
+
+  function auditViewport() {
+    const report = document.getElementById('viewport-report');
+    const viewport = {
+      width: window.innerWidth,
+      height: window.innerHeight,
+      devicePixelRatio: window.devicePixelRatio || 1
+    };
+
+    const isMobile = viewport.width <= 768;
+    const isTouch = 'ontouchstart' in window;
+
+    report.innerHTML = `
+      <div class="audit-metric">
+        <span class="metric-label">Width</span>
+        <span class="metric-value">${viewport.width}px</span>
+      </div>
+      <div class="audit-metric">
+        <span class="metric-label">Height</span>
+        <span class="metric-value">${viewport.height}px</span>
+      </div>
+      <div class="audit-metric">
+        <span class="metric-label">Device Type</span>
+        <span class="metric-value">${isMobile ? 'Mobile' : 'Desktop'}</span>
+      </div>
+      <div class="audit-metric">
+        <span class="metric-label">Touch Support</span>
+        <span class="metric-value metric-${isTouch ? 'good' : 'warning'}">${isTouch ? 'Yes' : 'No'}</span>
+      </div>
+      <div class="audit-metric">
+        <span class="metric-label">Pixel Ratio</span>
+        <span class="metric-value">${viewport.devicePixelRatio}x</span>
+      </div>
+    `;
+  }
+
+  function auditPerformance() {
+    const report = document.getElementById('performance-report');
+    
+    // Basic performance metrics
+    const navigation = performance.getEntriesByType('navigation')[0];
+    
+    if (navigation) {
+      const loadTime = Math.round(navigation.loadEventEnd - navigation.loadEventStart);
+      const domContentLoaded = Math.round(navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart);
+      
+      const loadStatus = loadTime < 2000 ? 'good' : loadTime < 4000 ? 'warning' : 'bad';
+      const domStatus = domContentLoaded < 1000 ? 'good' : domContentLoaded < 2000 ? 'warning' : 'bad';
+
+      report.innerHTML = `
+        <div class="audit-metric">
+          <span class="metric-label">Load Time</span>
+          <span class="metric-value metric-${loadStatus}">${loadTime}ms</span>
+        </div>
+        <div class="audit-metric">
+          <span class="metric-label">DOM Ready</span>
+          <span class="metric-value metric-${domStatus}">${domContentLoaded}ms</span>
+        </div>
+      `;
+    } else {
+      report.innerHTML = '<div class="audit-metric"><span class="metric-label">Performance data unavailable</span></div>';
+    }
+
+    // Core Web Vitals (if available)
+    if ('web-vital' in window) {
+      // This would integrate with web-vitals library if included
+    }
+  }
+
+  // Auto-run audit on mobile devices
+  if (window.innerWidth <= 768 || 'ontouchstart' in window) {
+    // Show audit button on mobile
+    document.addEventListener('DOMContentLoaded', () => {
+      const trigger = document.getElementById('audit-trigger');
+      if (trigger) {
+        trigger.style.display = 'block';
+      }
+    });
+  }
+
+  // Re-run audit on resize
+  let resizeTimeout;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      if (auditVisible) {
+        runMobileAudit();
+      }
+    }, 250);
+  });
+</script>
